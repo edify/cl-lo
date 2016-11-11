@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <title>Common Library Api - Documentation</title>
+    <link href='//fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'/>
+
+</head>
+
+<body class="swagger-section">
+
+    <div style="font-family: Droid Sans">
+        <div style="vertical-align:baseline; display:block; margin-left:auto; margin-right:auto; max-width:960px">
+            <h1>Code Examples</h1>
+            <h2>PHP</h2>
+            <div>
+                <p>To use the api from PHP via curl you can try this example:</p>
+                <br/>
+                <div style="padding:5px; margin-left: 10px; border: 2px solid #999999; border-radius: 10px;">
+                    <code>
+                        $service_url =  'https://edify-cl-qa.herokuapp.com/api/v1/curricula?all=false&from=0&size=10';<br/>
+                        $curl = curl_init($service_url);<br/><br/>
+                        $request_headers = array();<br/>
+                        $request_headers[] = 'Authorization: 05473d65c0e39175cd24838948d56a66e1ec9173790362838c6fd302b0a6a46e';<br/>
+                        curl_setopt($curl, CURLOPT_HTTPHEADER, $request_headers);<br/><br/>
+                        $curl_response = curl_exec($curl);<br/>
+                        if ($curl_response === false) {<br/>
+                            &nbsp;&nbsp;//Something went wrong!<br/>
+                        }<br/>
+                        curl_close($curl);<br/>
+                        $decoded = json_decode($curl_response);
+                    </code>
+                </div>
+            </div>
+            <br/>
+            <hr style="color: #999999;"/>
+            <div>
+                <h2>Javascript</h2>
+                <p>To use the api from Javascript you can try this code:</p>
+                <br/>
+                <div style="padding:5px; margin-left: 10px; border: 2px solid #999999; border-radius: 10px;">
+                    <code>
+                        var xhr = new XMLHttpRequest();<br/>
+                        xhr.open('GET', 'https://edify-cl-qa.herokuapp.com/api/v1/curricula?all=false&from=0&size=10');<br/>
+                        xhr.onreadystatechange = handler;<br/>
+                        xhr.responseType = 'json';<br/>
+                        xhr.setRequestHeader('Accept', 'application/json');<br/>
+                        xhr.setRequestHeader('Authorization', '05473d65c0e39175cd24838948d56a66e1ec9173790362838c6fd302b0a6a46e');<br/>
+                        xhr.send();<br/>
+                        function handler() {<br/>
+                        &nbsp;&nbsp;//Handle the response<br/>
+                        }
+                    </code>
+                </div>
+            </div>
+            <p>Go <a href="../index.html" style="color:#547f00;" >back</a></p>
+        </div>
+    </div>
+</body>
+</html>

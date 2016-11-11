@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="1" author="commonlibrary">
+        <createTable tableName="audit_events">
+            <column name="id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="principal" type="varchar(50)"/>
+            <column name="event_date" type="timestamp"/>
+            <column name="event_type" type="varchar(50)"/>
+        </createTable>
+
+        <createTable tableName="audit_event_data">
+            <column name="audit_event_id" type="UUID"/>
+            <column name="name" type="varchar(50)"/>
+            <column name="value" type="varchar(255)"/>
+        </createTable>
+
+        <createIndex indexName="idx_audit_event"
+                     tableName="audit_events"
+                     unique="false">
+            <column name="principal" type="varchar(50)"/>
+            <column name="event_date" type="timestamp"/>
+        </createIndex>
+
+        <createIndex indexName="idx_persistent_audit_event_data"
+                     tableName="audit_event_data"
+                     unique="false">
+            <column name="audit_event_id" type="UUID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="2" author="commonlibrary">
+
+        <createTable tableName="clc_contents">
+            <column name="id" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="version" type="bigint"/>
+            <column name="creationdate" type="timestamp without time zone"/>
+            <column name="modificationdate" type="timestamp without time zone"/>
+            <column name="md5" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="mime_type" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="url" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="contents_resourcesurl">
+            <column name="contents_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resourcesurl" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="clc_curriculum">
+            <column name="id" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="version" type="bigint"/>
+            <column name="creationdate" type="timestamp without time zone"/>
+            <column name="modificationdate" type="timestamp without time zone"/>
+            <column name="compound_content" type="boolean"/>
+            <column name="description" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="discipline" type="varchar(255)"/>
+            <column name="enabled" type="boolean"/>
+            <column name="author" type="varchar(255)"/>
+            <column name="context" type="integer"/>
+            <column name="coverage" type="varchar(255)"/>
+            <column name="difficulty" type="integer"/>
+            <column name="end_user" type="integer"/>
+            <column name="interactivity_degree" type="integer"/>
+            <column name="isbn" type="varchar(255)"/>
+            <column name="keywords" type="varchar(255)"/>
+            <column name="language" type="integer"/>
+            <column name="price" type="double precision"/>
+            <column name="status" type="integer"/>
+            <column name="topic" type="varchar(255)"/>
+            <column name="name" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="title" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="root" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+        </createTable>
+
+
+        <createTable tableName="clc_folder">
+            <column name="id" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="version" type="bigint"/>
+            <column name="creationdate" type="timestamp without time zone"/>
+            <column name="modificationdate" type="timestamp without time zone"/>
+            <column name="name" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="clc_folder_x_folder_list">
+            <column name="clc_folder_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="folderlist_id" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="clc_folder_x_l_object_list">
+            <column name="clc_folder_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="learningobjectlist_id" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="clc_l_objective_x_l_objective_list">
+            <column name="clc_learning_objective_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="learningobjectivelist_id" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="clc_l_object_x_l_objective_list">
+            <column name="clc_learning_object_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="clc_learning_objective_id" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="clc_learning_object">
+            <column name="id" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="version" type="bigint"/>
+            <column name="creationdate" type="timestamp without time zone"/>
+            <column name="modificationdate" type="timestamp without time zone"/>
+            <column name="compound_content" type="boolean"/>
+            <column name="description" type="varchar(255)"/>
+            <column name="enabled" type="boolean"/>
+            <column name="format" type="integer"/>
+            <column name="author" type="varchar(255)"/>
+            <column name="context" type="integer"/>
+            <column name="coverage" type="varchar(255)"/>
+            <column name="difficulty" type="integer"/>
+            <column name="end_user" type="integer"/>
+            <column name="interactivity_degree" type="integer"/>
+            <column name="isbn" type="varchar(255)"/>
+            <column name="keywords" type="varchar(255)"/>
+            <column name="language" type="integer"/>
+            <column name="price" type="double precision"/>
+            <column name="status" type="integer"/>
+            <column name="topic" type="varchar(255)"/>
+            <column name="name" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="subject" type="varchar(255)"/>
+            <column name="title" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="type" type="integer"/>
+            <column name="contents" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="clc_learning_objective">
+            <column name="id" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="version" type="bigint"/>
+            <column name="creationdate" type="timestamp without time zone"/>
+            <column name="modificationdate" type="timestamp without time zone"/>
+            <column name="name" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="curriculum_extrametadata">
+            <column name="curriculum_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="extrametadata" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="learningobject_extrametadata">
+            <column name="learningobject_id" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="extrametadata" type="varchar(255)"/>
+        </createTable>
+
+        <createTable tableName="clws_user">
+            <column name="id" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="version" type="bigint"/>
+            <column name="creationdate" type="timestamp without time zone"/>
+            <column name="modificationdate" type="timestamp without time zone"/>
+            <column name="name" type="varchar(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="last_name" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="password" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="api_key" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="secret_key" type="varchar(255)">
+                <constraints  nullable="false"/>
+            </column>
+            <column name="email" type="varchar(255)"/>
+        </createTable>
+
+        <addForeignKeyConstraint baseTableName="clc_curriculum" baseColumnNames="root" constraintName="fk_curriculum_folder"
+                                 referencedTableName="clc_folder"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="clc_folder_x_folder_list"  baseColumnNames="clc_folder_id" constraintName="fk_folder_folder_f" onDelete="CASCADE"
+                                 referencedTableName="clc_folder"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="contents_resourcesurl" baseColumnNames="contents_id" constraintName="fk_resources_content"
+                                 referencedTableName="clc_contents"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="clc_folder_x_l_object_list" baseColumnNames="clc_folder_id" constraintName="fk_folder_folder_l" onDelete="CASCADE"
+                                 referencedTableName="clc_folder"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="clc_l_objective_x_l_objective_list" baseColumnNames="clc_learning_objective_id" constraintName="fk_learningobjective_learningobjective" onDelete="CASCADE"
+                                 referencedTableName="clc_learning_objective"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="clc_l_object_x_l_objective_list" baseColumnNames="clc_learning_object_id" constraintName="fk_learningobject_learningobjective" onDelete="CASCADE"
+                                 referencedTableName="clc_learning_object"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="clc_learning_object" baseColumnNames="contents" constraintName="fk_learningobject_contents" onDelete="SET NULL"
+                                 referencedTableName="clc_contents"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="curriculum_extrametadata" baseColumnNames="curriculum_id" constraintName="fk_curriculum_extrametadata"
+                                 referencedTableName="clc_curriculum"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="learningobject_extrametadata" baseColumnNames="learningobject_id" constraintName="fk_lo_extrametadata"
+                                 referencedTableName="clc_learning_object"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

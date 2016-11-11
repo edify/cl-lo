@@ -1,0 +1,5 @@
+lo_index: clc_test_learning_object_index
+lo_type: clc_learning_object
+binary:
+  host: localhost
+  port: 9300

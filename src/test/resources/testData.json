@@ -1,0 +1,281 @@
+[
+
+  {
+    "learningObject": {
+      "id": "integrationtestword",
+      "name": "Learning Object Word Format",
+      "description": "Learning Object containing Tennis information",
+      "title": "Learning Object Word Format - Tennis",
+      "type": "ANY",
+      "format": "WORD",
+      "subject": "Sports",
+      "metadata": {
+        "keywords": "tennis, sports",
+        "coverage": "Learning Object's coverage",
+        "context": "PRIMARY_EDUCATION",
+        "difficulty": "VERY_LOW",
+        "endUser": "LEARNERS",
+        "language": "English",
+        "status": "ANY",
+        "author": "Learning Object's author",
+        "topic": "sports",
+        "isbn": "Learning Object's ISBN",
+        "price": 1000
+      },
+      "learningObjectiveList": []
+    },
+    "fileName": "testFile.docx"
+  },
+
+  {
+    "learningObject": {
+      "id": "integrationtesthtml",
+      "name": "Learning Object HTML Format",
+      "description": "Learning Object containing Soccer player information",
+      "title": "Learning Object HTML Format - SoccerPlayer",
+      "type": "ANY",
+      "format": "HTML",
+      "subject": "Sports",
+      "metadata": {
+        "keywords": "soccer, sports",
+        "coverage": "Learning Object's coverage",
+        "context": "PRIMARY_EDUCATION",
+        "difficulty": "VERY_LOW",
+        "endUser": "LEARNERS",
+        "language": "English",
+        "status": "ANY",
+        "author": "Learning Object's author",
+        "topic": "sports",
+        "isbn": "Learning Object's ISBN",
+        "price": 1000
+      },
+      "learningObjectiveList": []
+    },
+    "fileName": "testFile.html"
+  },
+
+  {
+    "learningObject": {
+      "id": "integrationtestjson",
+      "name": "Learning Object JSON Format",
+      "description": "Learning Object containing natural phenomena information",
+      "title": "Learning Object JSON Format - natural phenomena",
+      "type": "ANY",
+      "format": "JSON",
+      "metadata": {
+        "keywords": "natural, phenomenon",
+        "context": "SECONDARY_EDUCATION",
+        "difficulty": "ANY",
+        "endUser": "ANY",
+        "language": "English",
+        "status": "REVISED",
+        "author": "Unknown",
+        "topic": "natural phenomenon",
+        "isbn": "NotFound",
+        "price": 0
+      },
+      "learningObjectiveList": []
+    },
+    "fileName": "testFile.json"
+  },
+
+  {
+    "learningObject": {
+      "id": "integrationtestodt",
+      "name": "Learning Object ODT Format",
+      "description": "Learning Object containing harry potter information",
+      "title": "Learning Object ODT Format - harry potter",
+      "type": "ANY",
+      "format": "ODT",
+      "metadata": {
+        "keywords": "harry, potter, wizard",
+        "context": "SECONDARY_EDUCATION",
+        "difficulty": "ANY",
+        "endUser": "ANY",
+        "language": "English",
+        "status": "REVISED",
+        "author": "Rowling",
+        "topic": "harry potter",
+        "isbn": "NotFound",
+        "price": 0
+      },
+      "learningObjectiveList": []
+    },
+    "fileName": "testFile.odt"
+  },
+
+  {
+    "learningObject": {
+      "id": "integrationtestpdf",
+      "name": "Learning Object PDF Format",
+      "description": "Learning Object containing competitive programming information",
+      "title": "Learning Object PDF Format - Competitive Programming",
+      "type": "ANY",
+      "format": "PDF",
+      "metadata": {
+        "keywords": "acm, competitive, programming",
+        "context": "HIGHER_EDUCATION",
+        "difficulty": "ANY",
+        "endUser": "ANY",
+        "language": "English",
+        "status": "REVISED",
+        "author": "Unknown",
+        "topic": "competitive programming",
+        "isbn": "NotFound",
+        "price": 0
+      },
+      "learningObjectiveList": []
+    },
+    "fileName": "testFile.pdf"
+  },
+
+  {
+    "learningObject": {
+      "id": "integrationtesttxt",
+      "name": "Learning Object PLAIN_TEXT Format",
+      "description": "Learning Object containing graph theory information",
+      "title": "Learning Object PLAIN_TEXT Format - graph theory",
+      "type": "ANY",
+      "format": "PLAIN_TEXT",
+      "metadata": {
+        "keywords": "graph, theory",
+        "context": "HIGHER_EDUCATION",
+        "difficulty": "ANY",
+        "endUser": "ANY",
+        "language": "English",
+        "status": "REVISED",
+        "author": "Unknown",
+        "topic": "graph theory",
+        "isbn": "NotFound",
+        "price": 0
+      },
+      "learningObjectiveList": []
+    },
+    "fileName": "testFile.txt"
+  },
+
+  {
+    "learningObject": {
+      "id": "integrationtestexcel",
+      "name": "Learning Object excel Format",
+      "description": "Learning Object containing FC Barcelona players information",
+      "title": "Learning Object excel Format - FC Barcelona players",
+      "type": "ANY",
+      "format": "EXCEL",
+      "metadata": {
+        "keywords": "barcelona, soccer, players",
+        "context": "HIGHER_EDUCATION",
+        "difficulty": "ANY",
+        "endUser": "ANY",
+        "language": "English",
+        "status": "REVISED",
+        "author": "Unknown",
+        "topic": "FC Barcelona players",
+        "isbn": "NotFound",
+        "price": 0
+      },
+      "learningObjectiveList": []
+    },
+    "fileName": "testFile.xlsx"
+  },
+
+  {
+    "learningObject": {
+      "id": "integrationtestxml",
+      "name": "Learning Object xml Format",
+      "description": "Learning Object containing a xml note",
+      "title": "Learning Object xml Format - Note",
+      "type": "ANY",
+      "format": "XML",
+      "metadata": {
+        "keywords": "note",
+        "context": "HIGHER_EDUCATION",
+        "difficulty": "ANY",
+        "endUser": "ANY",
+        "language": "English",
+        "status": "REVISED",
+        "author": "Unknown",
+        "topic": "Unique note",
+        "isbn": "NotFound",
+        "price": 0
+      },
+      "learningObjectiveList": []
+    },
+    "fileName": "testFile.xml"
+  },
+
+  {
+    "learningObject": {
+      "id": "integrationtestpowerpoint",
+      "name": "Learning Object POWER_POINT Format",
+      "description": "Learning Object containing Duck Duck Go information",
+      "title": "Learning Object POWER_POINT Format - Duck Duck Go",
+      "type": "ANY",
+      "format": "POWER_POINT",
+      "metadata": {
+        "keywords": "search, engine, duck, go",
+        "context": "HIGHER_EDUCATION",
+        "difficulty": "ANY",
+        "endUser": "ANY",
+        "language": "English",
+        "status": "REVISED",
+        "author": "Unknown",
+        "topic": "Search engine free",
+        "isbn": "NotFound",
+        "price": 0
+      },
+      "learningObjectiveList": []
+    },
+    "fileName": "testFile.pptx"
+  },
+
+  {
+    "learningObject": {
+      "id": "integrationtestodp",
+      "name": "Learning Object odp Format",
+      "description": "Learning Object containing GitHub information",
+      "title": "Learning Object odp Format - GitHub",
+      "type": "ANY",
+      "format": "ODP",
+      "metadata": {
+        "keywords": "code, repository",
+        "context": "HIGHER_EDUCATION",
+        "difficulty": "ANY",
+        "endUser": "ANY",
+        "language": "English",
+        "status": "REVISED",
+        "author": "Unknown",
+        "topic": "Remote code repository GitHub",
+        "isbn": "NotFound",
+        "price": 0
+      },
+      "learningObjectiveList": []
+    },
+    "fileName": "testFile.odp"
+  },
+
+  {
+    "learningObject": {
+      "id": "integrationtestods",
+      "name": "Learning Object ods Format",
+      "description": "Learning Object containing programming languages information",
+      "title": "Learning Object ods Format - programming languages",
+      "type": "ANY",
+      "format": "ODS",
+      "metadata": {
+        "keywords": "programming languages",
+        "context": "HIGHER_EDUCATION",
+        "difficulty": "ANY",
+        "endUser": "ANY",
+        "language": "English",
+        "status": "REVISED",
+        "author": "Unknown",
+        "topic": "programming languages",
+        "isbn": "NotFound",
+        "price": 20020
+      },
+      "learningObjectiveList": []
+    },
+    "fileName": "testFile.ods"
+  }
+]

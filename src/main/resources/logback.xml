@@ -1,0 +1,98 @@
+<configuration>
+
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <logger name="org.springframework.web" level="DEBUG"/>
+
+    <logger name="org.springframework.web" level="DEBUG"/>
+
+    <logger name="org.commonlibrary.cllo.controllers.LearningObjectController">
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>logs/cl-log.log</file>
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+    </logger>
+
+    <logger name="org.commonlibrary.cllo.controllers.CurriculumController">
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>logs/cl-log.log</file>
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+    </logger>
+
+    <logger name="org.commonlibrary.cllo.controllers.SearchController">
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>logs/cl-log.log</file>
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+    </logger>
+
+    <logger name="org.commonlibrary.cllo.controllers.LearningObjectiveController">
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>logs/cl-log.log</file>
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+    </logger>
+
+    <logger name="org.commonlibrary.cllo.controllers.LinkedLearningObjectController">
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>logs/cl-log.log</file>
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+    </logger>
+
+    <logger name="org.commonlibrary.cllo.controllers.LinkedCurriculaController">
+        <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+            <file>logs/cl-log.log</file>
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+            </encoder>
+        </appender>
+    </logger>
+
+</configuration>

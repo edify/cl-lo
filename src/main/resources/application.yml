@@ -1,0 +1,79 @@
+spring:
+  profiles.active: default,BE_Mongo,FS_S3,SRCH_ES
+---
+info:
+  build:
+    artifact: cl-api
+    version: 1.0.0
+    description: Common Library Rest API
+
+server:
+  port: 8443
+  ssl:
+    keyStore: ${CERT_KEY_STORE_PATH}
+    keyStorePassword: ${CERT_KEY_STORE_PW}
+    keyPassword: ${CERT_KEY_PW}
+
+http-server:
+  port: 8080
+
+spring:
+  profiles: default
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: POSTGRESQL
+    openInView: false
+    show_sql: true
+    generate-ddl: false
+    hibernate:
+      ddl-auto: none
+      naming-strategy: org.hibernate.cfg.EJB3NamingStrategy
+    properties:
+      hibernate.generate_statistics: true
+  data:
+    mongodb:
+      uri: mongodb://localhost/cl_dev
+
+database:
+  dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
+  url: postgres://myuser:mypwd@localhost:5432/mydb
+
+elastic_search:
+  general:
+    lo_index: clc_learning_object_index
+    lo_type: clc_learning_object
+    http:
+      url: http://localhost:9200
+    binary:
+      host: localhost
+      port: 9300
+  more_like_this:
+    min_doc_freq: 1
+    min_term_freq: 1
+    minimum_should_match: 30%
+
+s3Storage:
+  general:
+    empty_bucket: false
+    bucket_name: ${AWS_S3_BUCKET_NAME}
+    aws_access_key: ${AWS_ACCESS_KEY}
+    aws_secret_key: ${AWS_SECRET_KEY}
+  file:
+    url:
+      expiration_hours: 2
+
+api:
+  base:
+    url: /api/v1
+
+rabbitmq:
+  general:
+    url: amqp://localhost
+    lo_queue: cl_lo_queue
+
+---
+spring:
+  profiles: Integration_Tests
+  data:
+    mongodb:
+      uri: mongodb://localhost/cl_integration_tests
