@@ -7,7 +7,7 @@ orientdb:
   volumes:
     - "/mnt/sda1/dockerVolumes/orientdb:/opt/orientdb/databases"
   environment:
-    - ORIENTDB_ROOT_PASSWORD
+    - ORIENTDB_ROOT_PASSWORD=${ORIENTDB_ROOT_PASSWORD}
 
 elasticsearch:
   build: docker/elasticsearch

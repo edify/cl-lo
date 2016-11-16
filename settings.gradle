@@ -1,2 +1,2 @@
 include ':clauth'
-project(':clauth').projectDir = new File(settingsDir, '../cl-auth/cl-auth-java')
+project(':clauth').projectDir = new File(settingsDir, '../cl-auth-java')
