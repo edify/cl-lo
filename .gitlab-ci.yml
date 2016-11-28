@@ -1,0 +1,9 @@
+stages:
+  - test
+
+test-debug-java:
+  image: openjdk:8
+  stage: test
+  script:
+    - ./gradlew -PexcludeTests=org/commonlibrary/cllo/services/ElasticSearchServiceSpec build
+

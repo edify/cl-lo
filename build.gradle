@@ -1,3 +1,12 @@
+apply plugin: "java"
+apply plugin: "groovy"
+apply plugin: "idea"
+apply plugin: "spring-boot"
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.artifactory'
+
+
 buildscript {
     ext {
         springBootVersion = "1.1.7.RELEASE"
@@ -7,36 +16,32 @@ buildscript {
         maven {
             url "http://repo.springsource.org/milestone/"
         }
+        maven { 
+            url 'http://dl.bintray.com/jfrog/jfrog-jars' 
+        }
+        maven {
+            url "https://edify.artifactoryonline.com/edify/libs-releases-local"
+            credentials {
+                username = "${artifactory_user}"
+                password = "${artifactory_password}"
+            }
+        }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE")
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.0.2.RELEASE"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:+"
     }
 }
-
-apply plugin: "java"
-apply plugin: "groovy"
-apply plugin: "idea"
-apply plugin: "spring-boot"
-
-mainClassName = "org.commonlibrary.cllo.Application"
-version = new File("version").text
-group = "org.commonlibrary"
-description = "Common Library API"
 
 jar {
     baseName = "cl-lo"
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = "sources"
-    from sourceSets.main.allSource
-}
 
-artifacts {
-    archives sourcesJar
-}
-
-task stage(dependsOn: ["assemble"])
+mainClassName = "org.commonlibrary.cllo.Application"
+version = new File("version").text
+group = "org.commonlibrary"
+description = "Common Library Learning Object"
 
 repositories {
     maven {
@@ -53,6 +58,56 @@ repositories {
 
     mavenCentral()
 
+}
+
+/**
+ * Artifactory configuration
+ */
+artifactory {
+    contextUrl = "${artifactory_contextUrl}"
+    publish {
+        repository {
+            repoKey = 'libs-releases-local'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
+        defaults {
+            publications ('mavenJava')
+        }
+    }
+    resolve {
+        repository {
+            repoKey = 'libs-releases'
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
+    }
+}
+
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = "sources"
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+task stage(dependsOn: ["assemble"])
+
+artifactoryPublish { 
+  dependsOn jar
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
 }
 
 
@@ -87,8 +142,8 @@ dependencies {
     compile "com.mangofactory:swagger-springmvc:0.8.8"
     compile "ch.qos.logback:logback-classic:1.1.2"
 
-    // Local dependencies.
-    compile project(":clauth")
+    // CL project dependencies.
+    compile "org.commonlibrary:cl-auth-java:0.0.1"
 
     // Runtime dependencies.
     runtime "com.mattbertolini:liquibase-slf4j:1.2.1"
@@ -103,6 +158,15 @@ dependencies {
 }
 
 test {
+
+    def testExclusions = project.hasProperty("excludeTests") ? excludeTests : "default"
+
+    testExclusions = testExclusions.split(",")
+
+    testExclusions.collect {
+        exclude "${it}**"
+    }
+
     testLogging {
         events "started", "passed"
     }
