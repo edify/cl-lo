@@ -10,16 +10,8 @@ test-debug:
 
 release-docker:
   image: openjdk:8
-  services:
-    - docker:dind
   stage: publish
   only:
     - master
   script:
-    - docker info
-    - docker login -p $ARTIFACTORY_PASSWORD -u $ARTIFACTORY_USERNAME edify-dkr.jfrog.io
-    - ./gradlew build --stacktrace -x test -x sourcesJar -Partifactory_user=$ARTIFACTORY_USERNAME -Partifactory_password=$ARTIFACTORY_PASSWORD -Partifactory_contextUrl=https://edify.artifactoryonline.com/edify
-    - docker build -t cl-lo .
-    - export DOCKER_TAG=`cat version`
-    - docker tag cl-lo edify-dkr.jfrog.io/cl-lo:$DOCKER_TAG
-    - docker push edify-dkr.jfrog.io/cl-lo
+    - echo "Docker-image publication pending..."
