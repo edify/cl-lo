@@ -16,8 +16,8 @@ buildscript {
         maven {
             url "http://repo.springsource.org/milestone/"
         }
-        maven { 
-            url 'http://dl.bintray.com/jfrog/jfrog-jars' 
+        maven {
+            url 'http://dl.bintray.com/jfrog/jfrog-jars'
         }
         maven {
             url "https://edify.artifactoryonline.com/edify/libs-releases-local"
@@ -98,7 +98,7 @@ artifacts {
 
 task stage(dependsOn: ["assemble"])
 
-artifactoryPublish { 
+artifactoryPublish {
   dependsOn jar
 }
 

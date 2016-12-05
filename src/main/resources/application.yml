@@ -3,19 +3,19 @@ spring:
 ---
 info:
   build:
-    artifact: cl-api
-    version: 1.0.0
-    description: Common Library Rest API
+    artifact: cl-lo
+    version: 0.0.1
+    description: Common Library Learning Object Microservice
 
 server:
-  port: 8443
+  port: ${CL_LO_HTTPS_PORT}
   ssl:
     keyStore: ${CERT_KEY_STORE_PATH}
     keyStorePassword: ${CERT_KEY_STORE_PW}
     keyPassword: ${CERT_KEY_PW}
 
 http-server:
-  port: 8080
+  port: ${CL_LO_HTTP_PORT}
 
 spring:
   profiles: default
@@ -32,7 +32,7 @@ spring:
       hibernate.generate_statistics: true
   data:
     mongodb:
-      uri: mongodb://localhost/cl_dev
+      uri: ${CL_MONGO_URI}
 
 database:
   dataSourceClassName: org.postgresql.ds.PGSimpleDataSource
@@ -43,10 +43,10 @@ elastic_search:
     lo_index: clc_learning_object_index
     lo_type: clc_learning_object
     http:
-      url: http://localhost:9200
+      url: ${CL_ES_URL}
     binary:
-      host: localhost
-      port: 9300
+      host: ${CL_ES_HOST}
+      port: ${CL_ES_PORT}
   more_like_this:
     min_doc_freq: 1
     min_term_freq: 1
@@ -68,7 +68,7 @@ api:
 
 rabbitmq:
   general:
-    url: amqp://localhost
+    url: ${CL_RMQ_URL}
     lo_queue: cl_lo_queue
 
 ---
@@ -76,4 +76,4 @@ spring:
   profiles: Integration_Tests
   data:
     mongodb:
-      uri: mongodb://localhost/cl_integration_tests
+      uri: ${CL_IT_MONGO_URI}
