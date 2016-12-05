@@ -6,7 +6,7 @@ test-debug:
   image: openjdk:8
   stage: test
   script:
-    - ./gradlew build -PexcludeTests=org/commonlibrary/cllo/services/ElasticSearchServiceSpec -Partifactory_user=$ARTIFACTORY_USERNAME -Partifactory_password=$ARTIFACTORY_PASSWORD -Partifactory_contextUrl=https://edify.artifactoryonline.com/edify
+    - ./gradlew build --stacktrace -PexcludeTests=org/commonlibrary/cllo/services/ElasticSearchServiceSpec -Partifactory_user=$ARTIFACTORY_USERNAME -Partifactory_password=$ARTIFACTORY_PASSWORD -Partifactory_contextUrl=https://edify.artifactoryonline.com/edify
 
 release-docker:
   image: openjdk:8
@@ -14,7 +14,7 @@ release-docker:
   only:
     - master
   script:
-    - ./gradlew build -x test -x sourcesJar -Partifactory_user=$ARTIFACTORY_USERNAME -Partifactory_password=$ARTIFACTORY_PASSWORD -Partifactory_contextUrl=https://edify.artifactoryonline.com/edify
+    - ./gradlew build --stacktrace -x test -x sourcesJar -Partifactory_user=$ARTIFACTORY_USERNAME -Partifactory_password=$ARTIFACTORY_PASSWORD -Partifactory_contextUrl=https://edify.artifactoryonline.com/edify
     - docker login edify-dkr.jfrog.io -u $ARTIFACTORY_USERNAME -p $ARTIFACTORY_PASSWORD
     - docker build -t cl-lo .
     - export DOCKER_TAG=`cat version`

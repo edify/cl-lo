@@ -92,8 +92,9 @@ class S3ContentDaoSpec extends Specification {
 
         // Retrieve object summary versions.
         1 * s3Client.listVersions(_ as String, _ as String) >> versionListing
-
-        res[0] == "v1,Tue Jan 26 00:12:00 CST 2016"
+        String expectedVersion = "v1,${sdf.parse("26-12-16")}"
+        
+        res[0] == expectedVersion
     }
 
     def "Rolling back to some version"() {
