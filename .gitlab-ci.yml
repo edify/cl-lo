@@ -2,6 +2,13 @@ stages:
   - test
   - publish
 
+services:
+  - docker:dind
+
+before_script:
+  - docker info
+  - docker login -p $ARTIFACTORY_PASSWORD -u $ARTIFACTORY_USERNAME edify-dkr.jfrog.io
+
 test-debug:
   image: openjdk:8
   stage: test
@@ -15,7 +22,6 @@ release-docker:
     - master
   script:
     - ./gradlew build --stacktrace -x test -x sourcesJar -Partifactory_user=$ARTIFACTORY_USERNAME -Partifactory_password=$ARTIFACTORY_PASSWORD -Partifactory_contextUrl=https://edify.artifactoryonline.com/edify
-    - docker login edify-dkr.jfrog.io -u $ARTIFACTORY_USERNAME -p $ARTIFACTORY_PASSWORD
     - docker build -t cl-lo .
     - export DOCKER_TAG=`cat version`
     - docker tag cl-lo edify-dkr.jfrog.io/cl-lo:$DOCKER_TAG
