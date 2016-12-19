@@ -1,5 +1,7 @@
 package org.commonlibrary.cllo.filters
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import groovy.util.logging.Log
 import org.commonlibrary.cllo.auth.service.AuthService
 import org.commonlibrary.cllo.support.MultiReadHttpServletRequest
@@ -31,6 +33,13 @@ class AuthFilter implements Filter {
     @Autowired
     AuthService authService
 
+    ObjectMapper mapper
+
+    AuthFilter() {
+        mapper = new ObjectMapper()
+        mapper.configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true)
+    }
+
     @Override
     void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse res = (HttpServletResponse) response
@@ -38,7 +47,7 @@ class AuthFilter implements Filter {
         MultiReadHttpServletRequest req = new MultiReadHttpServletRequest((HttpServletRequest) request);
 
         // Required authorization params.
-        def headers, method, requestURL, body
+        def headers, method, requestURL, body, bodyString
 
         // Set headers map.
         headers = new HashMap()
@@ -53,7 +62,9 @@ class AuthFilter implements Filter {
         requestURL = getFullURL(req.getRequestURL().toString(), req.getQueryString())
 
         if(!req.contentType?.startsWith('multipart') && (method == 'post' || method == 'put')) {
-            body = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()))
+            bodyString = req.getReader().lines().collect(Collectors.joining(System.lineSeparator()))
+            body = mapper.readValue(bodyString, Object)
+            body = mapper.writeValueAsString(body).replaceAll("[ \n]", "")
         } else {
             body = ''
         }
