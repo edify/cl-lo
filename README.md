@@ -70,6 +70,19 @@ $ java -Dspring.profiles.active=BE_Mongo,FS_S3,SRCH_ES,INDEX_RMQ -jar build/libs
 
 ---
 
+# **Build and deploy docker image**
+
+```bash
+$ rm -rf ./build
+$ ./gradlew build -x test -x sourcesJar
+$ docker build -t cl-lo .
+$ docker tag cl-lo edify-dkr.jfrog.io/cl-lo:SEMANTIC_VERSION
+$ docker login edify-dkr.jfrog.io
+$ docker push edify-dkr.jfrog.io/cl-lo
+```
+
+---
+
 # **Learning Object REST API Reference**
 
 This section covers the main concepts of the Common Library's Learning Object REST API. It will explain how the authentication works, as well as the available resources and their format. The allowed operations on the resorces are going to be detailed with command line examples using [cUrl](https://curl.haxx.se/docs/manpage.html).
@@ -78,7 +91,7 @@ This section covers the main concepts of the Common Library's Learning Object RE
 
 For development purposes, the base URL will be pointing by default to the server that is running the cl-api application with the port 8443. This could be customized by editing the application.yaml of the cl-api project. Besides that, the URL contains /api/v1 after the host name. Example:
 
-        https://localhost:8443/api/v1
+        http://localhost:8080/api/v1
 
 # Resource Format
 
@@ -116,7 +129,7 @@ $ chmod +x bin/sauthc1_cli
 3. Use the script by passing the required arguments:
 
 ```bash
-$ ./bin/sauthc1_cli --url https://localhost:8443/api/v1/learningObjectives \
+$ ./bin/sauthc1_cli --url http://localhost:8080/api/v1/learningObjectives \
 --method POST \
 --body '{
         "name": "LO Name",
@@ -130,7 +143,7 @@ $ ./bin/sauthc1_cli --url https://localhost:8443/api/v1/learningObjectives \
 The previous command will output a string:
 
 ```
-{ Host: 'localhost:8443',
+{ Host: 'localhost:8080',
   'X-Stormpath-Date': '20160905T154832Z',
   Authorization: 'SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/uYHxdluS6Q/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=9111371712bdf41917303d638ac39c4d4b8099017a32704e9fc36911c4915f13' }
 ```
@@ -141,14 +154,16 @@ Then, you can use those values to build a cUrl request:
 curl -k --request POST \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/uYHxdluS6Q/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=9111371712bdf41917303d638ac39c4d4b8099017a32704e9fc36911c4915f13" \
 --header "X-Stormpath-Date: 20160905T154832Z" \
+--header "Host: localhost:8080" \
 --header "content-type: application/json" \
---url "https://localhost:8443/api/v1/learningObjectives" \
+--url "http://localhost:8080/api/v1/learningObjectives" \
 --data '{
         "name": "LO Name",
         "description": "LO Description",
         "learningObjectiveList": []
        }'
 ```
+
 
 # CRUD on resources
 
@@ -238,7 +253,7 @@ A learning objective is a brief statement that describes what people will be exp
 ## Resource URL
 
 ```
-https://localhost:8443/learningObjectives/{id}
+http://localhost:8080/learningObjectives/{id}
 ```
 
 ## Resource Attributes
@@ -267,7 +282,7 @@ Resource JSON example
 
 - **HTTP_METHOD**: POST
 
-- **URL**: https://localhost:8443/learningObjectives
+- **URL**: http://localhost:8080/learningObjectives
 
 - **Request data:**
 
@@ -280,7 +295,7 @@ curl -k --request POST \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjectives" \
+--url "http://localhost:8080/api/v1/learningObjectives" \
 --data '{
         "name": "LO Name",
         "description": "LO Description",
@@ -308,7 +323,7 @@ curl -k --request POST \
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjectives/{id}
+- **URL**: http://localhost:8080/learningObjectives/{id}
 
 - **Request data:** None.
 
@@ -319,7 +334,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjectives/57b88f5f2f5c80fe3ad7e4f6"
+--url "http://localhost:8080/api/v1/learningObjectives/57b88f5f2f5c80fe3ad7e4f6"
 ```
 
 - **Example Response:**
@@ -342,7 +357,7 @@ curl -k --request GET \
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjectives
+- **URL**: http://localhost:8080/learningObjectives
 
 - **Query Params:**
 
@@ -357,7 +372,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjectives?from=0&size=5&all=false"
+--url "http://localhost:8080/api/v1/learningObjectives?from=0&size=5&all=false"
 ```
 
 - **Example Response:**
@@ -438,7 +453,7 @@ curl -k --request GET \
 
 - **HTTP_METHOD**: PUT
 
-- **URL**: https://localhost:8443/learningObjectives/{id}
+- **URL**: http://localhost:8080/learningObjectives/{id}
 
 - **Request data:**
 
@@ -451,7 +466,7 @@ curl -k --request PUT \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjectives/57b88f5f2f5c80fe3ad7e4f6" \
+--url "http://localhost:8080/api/v1/learningObjectives/57b88f5f2f5c80fe3ad7e4f6" \
 --data '{
         "name": "Updated LO Name",
         "description": "Updated LO Description",
@@ -479,7 +494,7 @@ curl -k --request PUT \
 
 - **HTTP_METHOD**: DELETE
 
-- **URL**: https://localhost:8443/learningObjectives/{id}
+- **URL**: http://localhost:8080/learningObjectives/{id}
 
 - **Request data:** None.
 
@@ -490,7 +505,7 @@ curl -k --request DELETE \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjectives/57b88f5f2f5c80fe3ad7e4f6"
+--url "http://localhost:8080/api/v1/learningObjectives/57b88f5f2f5c80fe3ad7e4f6"
 ```
 
 - **Example Response:**
@@ -514,7 +529,7 @@ When we refer to learning objects, we are talking about any entity that can be u
 ## Resource URL
 
 ```
-https://localhost:8443/learningObjects/{id}
+http://localhost:8080/learningObjects/{id}
 ```
 
 ## Resource Attributes
@@ -534,7 +549,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/listTypes"
+--url "http://localhost:8080/api/v1/listTypes"
       ```
 
   * Example response:
@@ -553,7 +568,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/listFormats"
+--url "http://localhost:8080/api/v1/listFormats"
       ```
 
   * Example response:
@@ -578,7 +593,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/listContexts"
+--url "http://localhost:8080/api/v1/listContexts"
           ```
 
       - Example response:
@@ -598,7 +613,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/listDifficulties"
+--url "http://localhost:8080/api/v1/listDifficulties"
           ```
 
       - Example response:
@@ -616,7 +631,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/listIntendedUsers"
+--url "http://localhost:8080/api/v1/listIntendedUsers"
           ```
 
       - Example response:
@@ -634,7 +649,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/listInteractivityDegrees"
+--url "http://localhost:8080/api/v1/listInteractivityDegrees"
           ```
 
       - Example response:
@@ -652,7 +667,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/listLanguages"
+--url "http://localhost:8080/api/v1/listLanguages"
           ```
 
       - Example response:
@@ -687,7 +702,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/listStatuses"
+--url "http://localhost:8080/api/v1/listStatuses"
           ```
 
       - Example response:
@@ -796,7 +811,7 @@ Resource JSON example
 
 - **HTTP_METHOD**: POST
 
-- **URL**: https://localhost:8443/learningObjects
+- **URL**: http://localhost:8080/learningObjects
 
 - **Request data:**
 
@@ -809,7 +824,7 @@ curl -k --request POST \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects" \
+--url "http://localhost:8080/api/v1/learningObjects" \
 --data '{
         "name": "Learning Object name",
         "subject": "Learning Object subject",
@@ -900,7 +915,7 @@ curl -k --request POST \
 
 - **HTTP_METHOD**: POST
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents
 
 - **Request data:**
 
@@ -913,7 +928,7 @@ curl -k --request POST \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba40039d789851ef6ac9fb/contents" \
+--url "http://localhost:8080/api/v1/learningObjects/57ba40039d789851ef6ac9fb/contents" \
 --data '{
         "md5": "MD5 String",
         "mimeType": "image/png",
@@ -940,7 +955,7 @@ curl -k --request POST \
 
 - **HTTP_METHOD**: POST
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents/{contentsId}/file
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents/{contentsId}/file
 
 - **Request data:**
 
@@ -959,7 +974,7 @@ curl -k --request POST \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: multipart/form-data" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba40039d789851ef6ac9fb/contents/57ba414a9d789851ef6ac9fc/file" \
+--url "http://localhost:8080/api/v1/learningObjects/57ba40039d789851ef6ac9fb/contents/57ba414a9d789851ef6ac9fc/file" \
      -F filename=desiredFilename \
      -F primaryType=image \
      -F secondaryType=png \
@@ -981,7 +996,7 @@ curl -k --request POST \
 
 - **HTTP_METHOD**: POST
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents/{contentsId}/file
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents/{contentsId}/file
 
 - **Request data:**
 
@@ -1004,7 +1019,7 @@ curl -k --request POST \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57f7fe062d801cd2487161a6/contents/57f7fe6c2d801cd2487161a7/file" \
+--url "http://localhost:8080/api/v1/learningObjects/57f7fe062d801cd2487161a6/contents/57f7fe6c2d801cd2487161a7/file" \
 --data '{
         "filename": "desiredFilename",
         "primaryType": "text",
@@ -1028,7 +1043,7 @@ curl -k --request POST \
 
 - **HTTP_METHOD**: POST
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/file
+- **URL**: http://localhost:8080/learningObjects/{loId}/file
 
 - **Request data:**
 
@@ -1050,7 +1065,7 @@ curl -k --request POST \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba40039d789851ef6ac9fb/file" \
+--url "http://localhost:8080/api/v1/learningObjects/57ba40039d789851ef6ac9fb/file" \
 --data '{
         "filename": "filename.xml",
         "md5": "5d39af9a571b3166fe88aad88bd043bc",
@@ -1075,7 +1090,7 @@ curl -k --request POST \
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjects/{id}
+- **URL**: http://localhost:8080/learningObjects/{id}
 
 - **Request data:** None.
 
@@ -1086,7 +1101,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba40039d789851ef6ac9fb"
+--url "http://localhost:8080/api/v1/learningObjects/57ba40039d789851ef6ac9fb"
 ```
 
 - **Example Response:**
@@ -1143,7 +1158,7 @@ curl -k --request GET \
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjects
+- **URL**: http://localhost:8080/learningObjects
 
 - **Query Params:**
 
@@ -1158,7 +1173,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects?from=0&size=2&all=false"
+--url "http://localhost:8080/api/v1/learningObjects?from=0&size=2&all=false"
 ```
 
 - **Example Response:**
@@ -1276,7 +1291,7 @@ curl -k --request GET \
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents/{contentsId}
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents/{contentsId}
 
 - **Request data:** None.
 
@@ -1287,7 +1302,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba40039d789851ef6ac9fb/contents/57ba193c9d789851ef6ac9f8"
+--url "http://localhost:8080/api/v1/learningObjects/57ba40039d789851ef6ac9fb/contents/57ba193c9d789851ef6ac9f8"
 ```
 
 - **Example Response:**
@@ -1312,7 +1327,7 @@ curl -k --request GET \
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents
 
 - **Request data:** None.
 
@@ -1323,7 +1338,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba40039d789851ef6ac9fb/contents"
+--url "http://localhost:8080/api/v1/learningObjects/57ba40039d789851ef6ac9fb/contents"
 ```
 
 - **Example Response:**
@@ -1347,7 +1362,7 @@ curl -k --request GET \
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents/{contentsId}/file/{fileId}
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents/{contentsId}/file/{fileId}
 
 - **Query Params**:
 
@@ -1360,7 +1375,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba0f7f9d788470efe91b24/contents/57ba0f7f9d788470efe91b25/file/My_Profile.html?refPath=57ba0f7f9d788470efe91b24/"
+--url "http://localhost:8080/api/v1/learningObjects/57ba0f7f9d788470efe91b24/contents/57ba0f7f9d788470efe91b25/file/My_Profile.html?refPath=57ba0f7f9d788470efe91b24/"
 ```
 
 - **Example Response:**
@@ -1376,7 +1391,7 @@ The file itself
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents/{contentsId}/file/{fileId}/inputStream
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents/{contentsId}/file/{fileId}/inputStream
 
 - **Query Params**:
 
@@ -1389,7 +1404,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57e19c35185e1e8c93db6f61/contents/57e19c35185e1e8c93db6f62/file/textandmaterials.html/inputStream?refPath=57e19c35185e1e8c93db6f61/"
+--url "http://localhost:8080/api/v1/learningObjects/57e19c35185e1e8c93db6f61/contents/57e19c35185e1e8c93db6f62/file/textandmaterials.html/inputStream?refPath=57e19c35185e1e8c93db6f61/"
 ```
 
 - **Example Response:**
@@ -1412,7 +1427,7 @@ A String with the file content
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents/{contentsId}/file/{fileId}/base64
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents/{contentsId}/file/{fileId}/base64
 
 - **Query Params**:
 
@@ -1425,7 +1440,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57e19c35185e1e8c93db6f61/contents/57e19c35185e1e8c93db6f62/file/textandmaterials.html/base64?refPath=57e19c35185e1e8c93db6f61/"
+--url "http://localhost:8080/api/v1/learningObjects/57e19c35185e1e8c93db6f61/contents/57e19c35185e1e8c93db6f62/file/textandmaterials.html/base64?refPath=57e19c35185e1e8c93db6f61/"
 ```
 
 - **Example Response:**
@@ -1444,7 +1459,7 @@ The following JSON:
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/public/contents/{contentsId}/file/{fileId}/versions
+- **URL**: http://localhost:8080/learningObjects/{loId}/public/contents/{contentsId}/file/{fileId}/versions
 
 - **Query Params**:
 
@@ -1457,7 +1472,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba19319d789851ef6ac9e9/contents/57ba19329d789851ef6ac9ea/file/Part_I_-_Special_Topics_in_Earth_Science.html/versions?refPath=57ba19319d789851ef6ac9e9/"
+--url "http://localhost:8080/api/v1/learningObjects/57ba19319d789851ef6ac9e9/contents/57ba19329d789851ef6ac9ea/file/Part_I_-_Special_Topics_in_Earth_Science.html/versions?refPath=57ba19319d789851ef6ac9e9/"
 ```
 
 - **Example Response:**
@@ -1472,7 +1487,7 @@ curl -k --request GET \
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents/{contentsId}/file/{fileId}/versions/{version}
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents/{contentsId}/file/{fileId}/versions/{version}
 
 - **Query Params**:
 
@@ -1485,7 +1500,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57e19c35185e1e8c93db6f61/contents/57e19c35185e1e8c93db6f62/file/textandmaterials.html/versions/1?refPath=57e19c35185e1e8c93db6f61/"
+--url "http://localhost:8080/api/v1/learningObjects/57e19c35185e1e8c93db6f61/contents/57e19c35185e1e8c93db6f62/file/textandmaterials.html/versions/1?refPath=57e19c35185e1e8c93db6f61/"
 ```
 
 - **Example Response:**
@@ -1509,7 +1524,7 @@ After a rollback, if you make a request to obtain the current file, it will retu
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents/{contentsId}/file/version/rollback/{version}
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents/{contentsId}/file/version/rollback/{version}
 
 - **Query Params**:
 
@@ -1522,7 +1537,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba19319d789851ef6ac9e9/contents/57ba19329d789851ef6ac9ea/file/version/rollback/2?refPath=57ba19319d789851ef6ac9e9/"
+--url "http://localhost:8080/api/v1/learningObjects/57ba19319d789851ef6ac9e9/contents/57ba19329d789851ef6ac9ea/file/version/rollback/2?refPath=57ba19319d789851ef6ac9e9/"
 ```
 
 - **Example Response (FileResponse object):**
@@ -1541,7 +1556,7 @@ curl -k --request GET \
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/linkedlearningobjects
+- **URL**: http://localhost:8080/linkedlearningobjects
 
 - **Query Params:**
 
@@ -1557,7 +1572,7 @@ curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/linkedlearningobjects?from=0&size=2&all=false&name=PSL111-03"
+--url "http://localhost:8080/api/v1/linkedlearningobjects?from=0&size=2&all=false&name=PSL111-03"
 ```
 
 - **Example Response:**
@@ -1625,7 +1640,7 @@ curl -k --request GET \
 
 - **HTTP_METHOD**: PUT
 
-- **URL**: https://localhost:8443/learningObjects/{id}
+- **URL**: http://localhost:8080/learningObjects/{id}
 
 - **Request data:**
 
@@ -1638,7 +1653,7 @@ curl -k --request PUT \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba40039d789851ef6ac9fb" \
+--url "http://localhost:8080/api/v1/learningObjects/57ba40039d789851ef6ac9fb" \
 --data '{
         "name": "New Learning Object name",
         "subject": "New Learning Object subject",
@@ -1711,7 +1726,7 @@ curl -k --request PUT \
 
 - **HTTP_METHOD**: PUT
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents/{contentsId}
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents/{contentsId}
 
 - **Request data:**
 
@@ -1724,7 +1739,7 @@ curl -k --request PUT \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba40039d789851ef6ac9fb/contents/57ba414a9d789851ef6ac9fc" \
+--url "http://localhost:8080/api/v1/learningObjects/57ba40039d789851ef6ac9fb/contents/57ba414a9d789851ef6ac9fc" \
 --data '{
         "mime_type": "text/html",
         "url": "/learningObjects/57ba0f789d788470efe91b1c/contents/57ba0f799d788470efe91b1d/file/textandmaterials.html?refPath=57ba0f789d788470efe91b1c/",
@@ -1753,7 +1768,7 @@ curl -k --request PUT \
 
 - **HTTP_METHOD**: DELETE
 
-- **URL**: https://localhost:8443/learningObjects/{loId}
+- **URL**: http://localhost:8080/learningObjects/{loId}
 
 - **Request data:** None.
 
@@ -1764,7 +1779,7 @@ curl -k --request DELETE \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba40039d789851ef6ac9fb"
+--url "http://localhost:8080/api/v1/learningObjects/57ba40039d789851ef6ac9fb"
 ```
 
 - **Example Response:**
@@ -1811,7 +1826,7 @@ curl -k --request DELETE \
 
 - **HTTP_METHOD**: DELETE
 
-- **URL**: https://localhost:8443/learningObjects/delete/soft/{loId}
+- **URL**: http://localhost:8080/learningObjects/delete/soft/{loId}
 
 - **Request data:** None.
 
@@ -1822,7 +1837,7 @@ curl -k --request DELETE \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/delete/soft/57ba0f7c9d788470efe91b20"
+--url "http://localhost:8080/api/v1/learningObjects/delete/soft/57ba0f7c9d788470efe91b20"
 ```
 
 - **Example Response:**
@@ -1870,7 +1885,7 @@ curl -k --request DELETE \
 
 - **HTTP_METHOD**: DELETE
 
-- **URL**: https://localhost:8443/learningObjects/{loId}/contents/{contentsId}
+- **URL**: http://localhost:8080/learningObjects/{loId}/contents/{contentsId}
 
 - **Request data:** None.
 
@@ -1881,7 +1896,7 @@ curl -k --request DELETE \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "content-type: application/json" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/learningObjects/57ba0f8c9d788470efe91b3b/contents/57ba0f8c9d788470efe91b3c"
+--url "http://localhost:8080/api/v1/learningObjects/57ba0f8c9d788470efe91b3b/contents/57ba0f8c9d788470efe91b3c"
 ```
 
 - **Example Response:**
@@ -1911,7 +1926,7 @@ If you want to find Learning Objects that match a specific query string, you mus
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/api/v1/search
+- **URL**: http://localhost:8080/api/v1/search
 
 - **Query Params:**
 
@@ -1929,7 +1944,7 @@ If you want to find Learning Objects that match a specific query string, you mus
 curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/search?query=wikipedia+format:URL&inclusions=wiki&exclusions=HTML,IMAGE&from=0&size=2&entityType=LearningObject"
+--url "http://localhost:8080/api/v1/search?query=wikipedia+format:URL&inclusions=wiki&exclusions=HTML,IMAGE&from=0&size=2&entityType=LearningObject"
 ```
 
 - **Example Response:**
@@ -1993,7 +2008,7 @@ You can obtain alternative terms by providing a query string. Common Library wil
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/api/v1/search/altTerms
+- **URL**: http://localhost:8080/api/v1/search/altTerms
 
 - **Query Params:**
 
@@ -2006,7 +2021,7 @@ You can obtain alternative terms by providing a query string. Common Library wil
 curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/search/altTerms?query=wikimedia%20chapios"
+--url "http://localhost:8080/api/v1/search/altTerms?query=wikimedia%20chapios"
 ```
 
 - **Example Response:**
@@ -2024,7 +2039,7 @@ This endpoint allows you to find objects that are like another object, you just 
 
 - **HTTP_METHOD**: GET
 
-- **URL**: https://localhost:8443/api/v1/search/moreLikeThis/{id}
+- **URL**: http://localhost:8080/api/v1/search/moreLikeThis/{id}
 
 - **Query Params:**
 
@@ -2039,7 +2054,7 @@ This endpoint allows you to find objects that are like another object, you just 
 curl -k --request GET \
 --header "Authorization: SAuthc1 sauthc1Id=5c4d6a3bdc68ffb02e3ce309964ac558/20160905/8hcW7pqAMx/sauthc1_request, sauthc1SignedHeaders=host;x-stormpath-date, sauthc1Signature=1e84666356c28a6b029f899ef3969876292672f44abeee6f068d978420497b1e" \
 --header "X-Stormpath-Date: 20160905T153936Z" \
---url "https://localhost:8443/api/v1/search/moreLikeThis/integrationtestslo000001?from=0&size=1&entityType=LearningObject"
+--url "http://localhost:8080/api/v1/search/moreLikeThis/integrationtestslo000001?from=0&size=1&entityType=LearningObject"
 ```
 
 - **Example Response:**
