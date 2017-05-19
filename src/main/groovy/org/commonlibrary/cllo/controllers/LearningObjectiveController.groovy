@@ -146,24 +146,29 @@ class LearningObjectiveController {
 
     @ExceptionHandler(ApiException.class)
     public @ResponseBody ErrorResponse handleApiError(HttpServletRequest req, HttpServletResponse response, ApiException apiException, Locale locale) {
-
         ErrorResponse er = new ErrorResponse()
         String [] error = apiException.cause.message.split('\\|')
         Logger logger = LoggerFactory.getLogger("org.commonlibrary.cllo.controllers.LearningObjectController")
 
-        er.code = error[0]
-        er.message = error[1]
-        response.setStatus(Integer.parseInt(error[2]))
-
-        if(null == apiException.cause.cause){
-            logger.warn(er.code + ': ' + er.message)
+        if (error.length == 3) {
+            er.code = error[0]
+            er.message = error[1]
+            response.setStatus(Integer.parseInt(error[2]))
+        } else {
+            er.code = "3002"
+            def causeMsg = apiException.cause.message ? apiException.cause.message : ""
+            er.message = """Internal Server Error. ${causeMsg}"""
+            response.setStatus(500)
         }
-        else{
+
+        if (!apiException.cause.cause) {
+            logger.error(er.code + ': ' + er.message)
+        } else {
             String errId = Hashing.sha256().newHasher().putString(UUID.randomUUID().toString(), Charsets.UTF_8).hash().toString()
             String[] args = [ errId ]
             String m = messageSource.getMessage("error.user_message", args, locale);
             er.description = m
-            logger.error(er.code + ': ' + er.message + ' : '+ errId + ' : '+ apiException.cause.cause.stackTrace)
+            logger.error(er.code + ': ' + er.message + ' : '+ errId + ' : \nStackTrace:\n'+ apiException.getFormattedStackTrace())
         }
         return er
     }

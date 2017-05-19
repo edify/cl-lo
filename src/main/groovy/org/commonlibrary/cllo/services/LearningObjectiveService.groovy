@@ -17,6 +17,8 @@
 
  package org.commonlibrary.cllo.services
 
+import org.commonlibrary.cllo.model.LearningObjective
+import org.commonlibrary.cllo.util.CoreException
 import org.springframework.data.domain.Page
 
 /**
@@ -28,14 +30,14 @@ import org.springframework.data.domain.Page
  */
 interface LearningObjectiveService {
 
-    public  org.commonlibrary.cllo.model.LearningObjective findById(String id, Locale locale) throws org.commonlibrary.cllo.util.CoreException
+    public  LearningObjective findById(String id, Locale locale) throws CoreException
 
-    public Page<org.commonlibrary.cllo.model.LearningObjective> findAll(int from, int size, boolean all, Locale locale) throws org.commonlibrary.cllo.util.CoreException
+    public Page<LearningObjective> findAll(int from, int size, boolean all, Locale locale) throws CoreException
 
-    public org.commonlibrary.cllo.model.LearningObjective insert(String learningObjectJSON, Locale locale) throws org.commonlibrary.cllo.util.CoreException
+    public LearningObjective insert(String learningObjectJSON, Locale locale) throws CoreException
 
-    public org.commonlibrary.cllo.model.LearningObjective update(String learningObjectJSON, String id, Locale locale) throws org.commonlibrary.cllo.util.CoreException
+    public LearningObjective update(String learningObjectJSON, String id, Locale locale) throws CoreException
 
-    public org.commonlibrary.cllo.model.LearningObjective delete(String id, Locale locale) throws org.commonlibrary.cllo.util.CoreException
+    public LearningObjective delete(String id, Locale locale) throws CoreException
 
 }

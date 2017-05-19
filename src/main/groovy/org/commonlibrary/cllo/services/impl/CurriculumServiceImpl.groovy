@@ -18,6 +18,16 @@
  package org.commonlibrary.cllo.services.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.commonlibrary.cllo.model.Curriculum
+import org.commonlibrary.cllo.model.Folder
+import org.commonlibrary.cllo.model.LearningObject
+import org.commonlibrary.cllo.model.LearningObjective
+import org.commonlibrary.cllo.repositories.CurriculumRepository
+import org.commonlibrary.cllo.repositories.FolderRepository
+import org.commonlibrary.cllo.repositories.LearningObjectRepository
+import org.commonlibrary.cllo.repositories.LearningObjectiveRepository
+import org.commonlibrary.cllo.services.CurriculumService
+import org.commonlibrary.cllo.util.CoreException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.MessageSource
 import org.springframework.data.domain.Page
@@ -41,31 +51,31 @@ import org.springframework.transaction.annotation.Transactional
 @Deprecated
 @Service
 @Transactional
-class CurriculumServiceImpl implements org.commonlibrary.cllo.services.CurriculumService {
+class CurriculumServiceImpl implements CurriculumService {
 
     @Autowired
-    private org.commonlibrary.cllo.repositories.CurriculumRepository curriculumRepository
+    private CurriculumRepository curriculumRepository
 
     @Autowired
-    private org.commonlibrary.cllo.repositories.LearningObjectRepository learningObjectRepository
+    private LearningObjectRepository learningObjectRepository
 
     @Autowired
-    private org.commonlibrary.cllo.repositories.FolderRepository folderRepository
+    private FolderRepository folderRepository
 
     @Autowired
-    private org.commonlibrary.cllo.repositories.LearningObjectiveRepository learningObjectiveRepository
+    private LearningObjectiveRepository learningObjectiveRepository
 
     @Autowired
     private MessageSource messageSource
 
-    public org.commonlibrary.cllo.model.Curriculum findById(String id, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public Curriculum findById(String id, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.Curriculum curriculum = curriculumRepository.findById(id)
+            Curriculum curriculum = curriculumRepository.findById(id)
 
             if(!curriculum){
                 String[] args = [ id ]
                 String m = messageSource.getMessage("curriculum.m1", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             return curriculum
@@ -73,11 +83,11 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         catch (Exception e) {
             String[] args = [ ]
             String m = e.getMessage() ?: messageSource.getMessage("curriculum.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    public Page<org.commonlibrary.cllo.model.Curriculum> findAll(int from, int size, boolean all, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public Page<Curriculum> findAll(int from, int size, boolean all, Locale locale) throws CoreException{
         try {
             int page = from/size
             if(page < 0){
@@ -92,17 +102,17 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
                 if(amount <= 0 || page > Math.ceil((double)(curriculumRepository.count()/amount))){
                     String[] args = [ ]
                     String m = messageSource.getMessage("curriculum.m3", args, locale)
-                    throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                    throw new CoreException(m, null)
                 }
 
-                Page<org.commonlibrary.cllo.model.Curriculum> curriculumList = curriculumRepository.findAll(true, new PageRequest(page, amount, new Sort(Sort.Direction.DESC, "title")))
+                Page<Curriculum> curriculumList = curriculumRepository.findAll(true, new PageRequest(page, amount, new Sort(Sort.Direction.DESC, "title")))
                 return curriculumList
             }
         }
         catch (Exception e) {
             String[] args = [ ]
             String m = e.getMessage() ?: messageSource.getMessage("curriculum.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
@@ -110,7 +120,7 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
      * This method is currently not working due to changes made in the learningObjectiveRepository.findByName operation. This will be fixed in cl-curricula.
      * See <a href="https://github.com/edify/cl-curricula">Edify cl-curricula</a>
      */
-    List<org.commonlibrary.cllo.model.Curriculum> findByLearningObjective(String name, int from, int size, boolean all, Locale locale) {
+    List<Curriculum> findByLearningObjective(String name, int from, int size, boolean all, Locale locale) {
         /*
         try {
             LearningObjective lo = learningObjectiveRepository.findByName(name)
@@ -159,35 +169,35 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         return []
     }
 
-    public org.commonlibrary.cllo.model.Curriculum insert(String curriculumJSON, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public Curriculum insert(String curriculumJSON, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.Curriculum curriculum = new org.commonlibrary.cllo.model.Curriculum()
+            Curriculum curriculum = new Curriculum()
             ObjectMapper mapper = new ObjectMapper()
-            org.commonlibrary.cllo.model.Curriculum curriculumC = mapper.readValue(curriculumJSON, org.commonlibrary.cllo.model.Curriculum.class)
+            Curriculum curriculumC = mapper.readValue(curriculumJSON, Curriculum.class)
             curriculum.CopyValues(curriculumC)
 
             if(!curriculum.getRoot()){
                 String[] args = []
                 String m = messageSource.getMessage("curriculum.m4", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
-            org.commonlibrary.cllo.model.Folder folder = new org.commonlibrary.cllo.model.Folder()
+            Folder folder = new Folder()
 
             List<String> fPath = []
 
             if(checkCycles(curriculum.getRoot(),fPath)){
                 String[] args = []
                 String m = messageSource.getMessage("curriculum.m7", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             folder.CopyValues(curriculum.getRoot())
 
-            List<org.commonlibrary.cllo.model.Folder> fl = saveFolders(folder)
+            List<Folder> fl = saveFolders(folder)
             folder.setFolderList(fl)
 
-            List<org.commonlibrary.cllo.model.LearningObject> lol = saveLearningObjects(folder)
+            List<LearningObject> lol = saveLearningObjects(folder)
             folder.setLearningObjectList(lol)
 
             folder.creationDate = new Date()
@@ -208,43 +218,43 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         catch (Exception e) {
             String[] args = [ ]
             String m = e.getMessage() ?: messageSource.getMessage("curriculum.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    public org.commonlibrary.cllo.model.Curriculum update(String curriculumJSON, String id, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public Curriculum update(String curriculumJSON, String id, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.Curriculum curriculum = curriculumRepository.findById(id)
+            Curriculum curriculum = curriculumRepository.findById(id)
 
             if(!curriculum){
                 String[] args = [ id ]
                 String m = messageSource.getMessage("curriculum.m1", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             ObjectMapper mapper = new ObjectMapper()
-            org.commonlibrary.cllo.model.Curriculum curriculumC = mapper.readValue(curriculumJSON, org.commonlibrary.cllo.model.Curriculum.class);
+            Curriculum curriculumC = mapper.readValue(curriculumJSON, Curriculum.class);
             curriculum.CopyValues(curriculumC)
 
             if(!curriculum.getRoot()){
                 String[] args = [ id ]
                 String m = messageSource.getMessage("curriculum.m4", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
-            org.commonlibrary.cllo.model.Folder folder = folderRepository.findById(curriculum.root.getId())
+            Folder folder = folderRepository.findById(curriculum.root.getId())
 
             if(!folder){
                 String[] args = [ curriculum.root.getId(), id ]
                 String m = messageSource.getMessage("curriculum.m5", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             List<String> fPath = []
             if(checkCycles(curriculum.getRoot(),fPath)){
                 String[] args = []
                 String m = messageSource.getMessage("curriculum.m7", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             folder.CopyValues(curriculum.getRoot())
@@ -266,18 +276,18 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         catch (Exception e) {
             String[] args = [ ]
             String m = e.getMessage() ?: messageSource.getMessage("curriculum.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    public org.commonlibrary.cllo.model.Curriculum delete(String id, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public Curriculum delete(String id, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.Curriculum curriculum = curriculumRepository.findById(id)
+            Curriculum curriculum = curriculumRepository.findById(id)
 
             if(!curriculum){
                 String[] args = [ id ]
                 String m = messageSource.getMessage("curriculum.m1", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             if(curriculum.getRoot()){
@@ -291,26 +301,26 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         catch (Exception e) {
             String[] args = [ ]
             String m = e.getMessage() ?: messageSource.getMessage("curriculum.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    public org.commonlibrary.cllo.model.Folder findFolderById(String idC, String idF, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public Folder findFolderById(String idC, String idF, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.Curriculum curriculum = curriculumRepository.findById(idC)
+            Curriculum curriculum = curriculumRepository.findById(idC)
 
             if(!curriculum){
                 String[] args = [ idC ]
                 String m = messageSource.getMessage("curriculum.m1", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
-            org.commonlibrary.cllo.model.Folder folder = folderRepository.findById(idF)
+            Folder folder = folderRepository.findById(idF)
 
             if(!folder){
                 String[] args = [ idF, idC ]
                 String m = messageSource.getMessage("curriculum.m6", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             return folder
@@ -318,57 +328,57 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         catch (Exception e) {
             String[] args = [ ]
             String m = e.getMessage() ?: messageSource.getMessage("curriculum.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    public List<org.commonlibrary.cllo.model.Folder> findFolders(String idC, String idF, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public List<Folder> findFolders(String idC, String idF, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.Folder folder = findFolderById(idC, idF, locale)
+            Folder folder = findFolderById(idC, idF, locale)
             return folder.getFolderList()
         }
         catch (Exception e) {
             String[] args = [ ]
             String m = e.getMessage() ?: messageSource.getMessage("curriculum.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    public List<org.commonlibrary.cllo.model.LearningObject> findLOs(String idC, String idF, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public List<LearningObject> findLOs(String idC, String idF, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.Folder folder = findFolderById(idC, idF, locale)
+            Folder folder = findFolderById(idC, idF, locale)
             return folder.getLearningObjectList()
         }
         catch (Exception e) {
             String[] args = [ ]
             String m = e.getMessage() ?: messageSource.getMessage("curriculum.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    public org.commonlibrary.cllo.model.Folder updateFolder(String folderJSON, String idC, String idF, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public Folder updateFolder(String folderJSON, String idC, String idF, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.Curriculum curriculum = curriculumRepository.findById(idC)
+            Curriculum curriculum = curriculumRepository.findById(idC)
 
             if(!curriculum){
                 String[] args = [ idC ]
                 String m = messageSource.getMessage("curriculum.m1", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             ObjectMapper mapper = new ObjectMapper()
-            org.commonlibrary.cllo.model.Folder folderC = mapper.readValue(folderJSON, org.commonlibrary.cllo.model.Folder.class)
+            Folder folderC = mapper.readValue(folderJSON, Folder.class)
 
             List<String> fPath = []
             if(checkCycles(folderC,fPath)){
                 String[] args = []
                 String m = messageSource.getMessage("curriculum.m7", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
-            org.commonlibrary.cllo.model.Folder folder = folderRepository.findById(folderC.id)
+            Folder folder = folderRepository.findById(folderC.id)
             if (!folder) {
-                throw new org.commonlibrary.cllo.util.CoreException(messageSource.getMessage("curriculum.m6", (String[])[idF, idC], locale), null)
+                throw new CoreException(messageSource.getMessage("curriculum.m6", (String[])[idF, idC], locale), null)
             }
 
             folder.CopyValues(folderC)
@@ -383,29 +393,29 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         catch (Exception e) {
             String[] args = [ ]
             String m = e.getMessage() ?: messageSource.getMessage("curriculum.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    public org.commonlibrary.cllo.model.Folder insertFolder(String folderJSON, String idC, String idF, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public Folder insertFolder(String folderJSON, String idC, String idF, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.Curriculum curriculum = curriculumRepository.findById(idC)
+            Curriculum curriculum = curriculumRepository.findById(idC)
 
             if(!curriculum){
                 String[] args = [ idC ]
                 String m = messageSource.getMessage("curriculum.m1", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
-            org.commonlibrary.cllo.model.Folder folder = new org.commonlibrary.cllo.model.Folder()
+            Folder folder = new Folder()
             ObjectMapper mapper = new ObjectMapper()
-            org.commonlibrary.cllo.model.Folder folderC = mapper.readValue(folderJSON, org.commonlibrary.cllo.model.Folder.class);
+            Folder folderC = mapper.readValue(folderJSON, Folder.class);
 
             List<String> fPath = []
             if(checkCycles(folderC,fPath)){
                 String[] args = []
                 String m = messageSource.getMessage("curriculum.m7", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             folder.CopyValues(folderC)
@@ -417,9 +427,9 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
             folderRepository.save(folder)
 
 
-            org.commonlibrary.cllo.model.Folder parent = folderRepository.findById(idF)
+            Folder parent = folderRepository.findById(idF)
 
-            List<org.commonlibrary.cllo.model.Folder> folderList = parent.getFolderList()
+            List<Folder> folderList = parent.getFolderList()
             folderList.add(folder)
             parent.setFolderList(folderList)
 
@@ -430,26 +440,26 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         catch (Exception e) {
             String[] args = [ ]
             String m = e.getMessage() ?: messageSource.getMessage("curriculum.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    public org.commonlibrary.cllo.model.Folder deleteFolder(String idC, String idF, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public Folder deleteFolder(String idC, String idF, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.Curriculum curriculum = curriculumRepository.findById(idC)
+            Curriculum curriculum = curriculumRepository.findById(idC)
 
             if(!curriculum){
                 String[] args = [ idC ]
                 String m = messageSource.getMessage("curriculum.m1", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
-            org.commonlibrary.cllo.model.Folder folder = folderRepository.findById(idF)
+            Folder folder = folderRepository.findById(idF)
 
             if(!folder){
                 String[] args = [ idF, idC ]
                 String m = messageSource.getMessage("curriculum.m6", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             folderRepository.delete(folder)
@@ -458,16 +468,16 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         catch (Exception e) {
             String[] args = [ ]
             String m = e.getMessage() ?: messageSource.getMessage("curriculum.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    private List<org.commonlibrary.cllo.model.LearningObject> saveLearningObjects(org.commonlibrary.cllo.model.Folder folder) throws Exception{
+    private List<LearningObject> saveLearningObjects(Folder folder) throws Exception{
 
-        List<org.commonlibrary.cllo.model.LearningObject> lol = []
+        List<LearningObject> lol = []
         try {
             for (lo in folder.getLearningObjectList()) {
-                org.commonlibrary.cllo.model.LearningObject loN = learningObjectRepository.findById(lo.getId())
+                LearningObject loN = learningObjectRepository.findById(lo.getId())
                 lol.add(loN)
             }
             return lol
@@ -477,14 +487,14 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         }
     }
 
-    private List<org.commonlibrary.cllo.model.Folder> saveFolders(org.commonlibrary.cllo.model.Folder folder) throws Exception{
+    private List<Folder> saveFolders(Folder folder) throws Exception{
 
-        List<org.commonlibrary.cllo.model.Folder> fl = []
+        List<Folder> fl = []
         try {
-            org.commonlibrary.cllo.model.Folder fT
+            Folder fT
             for (f in folder.getFolderList()) {
                 if (!f.getId()) {
-                    fT = new org.commonlibrary.cllo.model.Folder()
+                    fT = new Folder()
                     fT.CopyValues(f)
                     fT.setFolderList(saveFolders(fT))
                     fT.setLearningObjectList(saveLearningObjects(fT))
@@ -508,12 +518,12 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         }
     }
 
-    private void deleteFolders(org.commonlibrary.cllo.model.Folder folder) throws Exception{
+    private void deleteFolders(Folder folder) throws Exception{
         try {
-            org.commonlibrary.cllo.model.Folder fol = folderRepository.findById(folder.getId())
+            Folder fol = folderRepository.findById(folder.getId())
             if(fol) {
                 for (f in folder.getFolderList()) {
-                    org.commonlibrary.cllo.model.Folder fT
+                    Folder fT
                     fT = folderRepository.findById(f.getId())
                     deleteFolders(fT)
                     folderRepository.delete(fT)
@@ -526,7 +536,7 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         }
     }
 
-    private boolean checkCycles(org.commonlibrary.cllo.model.Folder f, List<String> fPath){
+    private boolean checkCycles(Folder f, List<String> fPath){
         if(f.getId()){
             fPath.add(f.getId())
         }
@@ -545,17 +555,17 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         return res
     }
 
-    List<org.commonlibrary.cllo.model.LearningObject> findLearningObjectsUsages(String id, Locale locale) {
+    List<LearningObject> findLearningObjectsUsages(String id, Locale locale) {
         try {
-            org.commonlibrary.cllo.model.LearningObjective lo = learningObjectiveRepository.findById(id)
+            LearningObjective lo = learningObjectiveRepository.findById(id)
             if(!lo){
                 String[] args = [ id ]
                 String m = messageSource.getMessage("loi.m1", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
-            List<org.commonlibrary.cllo.model.LearningObject> los = learningObjectRepository.findAll()
-            List<org.commonlibrary.cllo.model.LearningObject> res = []
+            List<LearningObject> los = learningObjectRepository.findAll()
+            List<LearningObject> res = []
 
             for(l in los){
                 if(matchLOs(l, id)){
@@ -567,11 +577,11 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         catch (Exception e) {
             String[] args = [  ]
             String m = messageSource.getMessage("loi.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    private boolean matchLOs(org.commonlibrary.cllo.model.LearningObject lo, String loiId){
+    private boolean matchLOs(LearningObject lo, String loiId){
         for(loi in lo.getLearningObjectiveList()){
             if(loiId == loi.getId()){
                 return true
@@ -580,7 +590,7 @@ class CurriculumServiceImpl implements org.commonlibrary.cllo.services.Curriculu
         return false
     }
 
-    private boolean matchCurricula(org.commonlibrary.cllo.model.Folder folder, List<org.commonlibrary.cllo.model.LearningObject> los) throws Exception{
+    private boolean matchCurricula(Folder folder, List<LearningObject> los) throws Exception{
         try {
             boolean res = false
 

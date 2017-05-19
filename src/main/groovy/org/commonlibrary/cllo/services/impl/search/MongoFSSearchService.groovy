@@ -18,6 +18,13 @@
  package org.commonlibrary.cllo.services.impl.search
 
 import org.apache.tika.io.IOUtils
+import org.commonlibrary.cllo.dao.impl.MongoContentDAO
+import org.commonlibrary.cllo.model.Contents
+import org.commonlibrary.cllo.model.LearningObject
+import org.commonlibrary.cllo.model.Metadata
+import org.commonlibrary.cllo.model.metadatavalues.Format
+import org.commonlibrary.cllo.repositories.LearningObjectRepository
+import org.commonlibrary.cllo.services.SearchService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.data.mongodb.gridfs.GridFsOperations
@@ -38,29 +45,29 @@ import org.springframework.stereotype.Service
 @Deprecated
 @Service
 @Profile('SRCH_Mongo')
-class MongoFSSearchService implements org.commonlibrary.cllo.services.SearchService {
+class MongoFSSearchService implements SearchService {
 
     @Autowired
-    private org.commonlibrary.cllo.repositories.LearningObjectRepository learningObjectRepository
+    private LearningObjectRepository learningObjectRepository
 
     @Autowired
     private GridFsOperations gridOperations
 
-    public MongoFSSearchService(org.commonlibrary.cllo.repositories.LearningObjectRepository lo, GridFsOperations gO) {
+    public MongoFSSearchService(LearningObjectRepository lo, GridFsOperations gO) {
 
         learningObjectRepository = lo
         gridOperations = gO
 
     }
 
-    List<org.commonlibrary.cllo.model.LearningObject> search(String query) {
+    List<LearningObject> search(String query) {
         try {
 
             String[] splitQuery = query.split('\\+')
 
 
-            List<org.commonlibrary.cllo.model.LearningObject> los = []
-            List<org.commonlibrary.cllo.model.LearningObject> allLO = learningObjectRepository.findAll(true)
+            List<LearningObject> los = []
+            List<LearningObject> allLO = learningObjectRepository.findAll(true)
 
             for (lo in allLO) {
 
@@ -93,7 +100,7 @@ class MongoFSSearchService implements org.commonlibrary.cllo.services.SearchServ
 
     }
 
-    private boolean applyPhysicalFilters(List<String> filters, org.commonlibrary.cllo.model.LearningObject lo) {
+    private boolean applyPhysicalFilters(List<String> filters, LearningObject lo) {
 
         boolean apply = true
         for (f in filters) {
@@ -107,7 +114,7 @@ class MongoFSSearchService implements org.commonlibrary.cllo.services.SearchServ
         return apply
     }
 
-    private boolean applyFilter(String key, String value, org.commonlibrary.cllo.model.LearningObject lo) {
+    private boolean applyFilter(String key, String value, LearningObject lo) {
 
         boolean result = true
 
@@ -126,7 +133,7 @@ class MongoFSSearchService implements org.commonlibrary.cllo.services.SearchServ
         return result
     }
 
-    private boolean matchExactQuery(String query, org.commonlibrary.cllo.model.LearningObject lo) {
+    private boolean matchExactQuery(String query, LearningObject lo) {
         if (matchLOSimpleProperties(query, lo) || matchLOMetadataProperties(query, lo.getMetadata()) || matchContents(lo.getFormat(), lo.getContents(), query)) {
             return true
         } else {
@@ -134,7 +141,7 @@ class MongoFSSearchService implements org.commonlibrary.cllo.services.SearchServ
         }
     }
 
-    private boolean matchLOSimpleProperties(String query, org.commonlibrary.cllo.model.LearningObject lo) {
+    private boolean matchLOSimpleProperties(String query, LearningObject lo) {
         if (matchQuery(lo.getTitle(), query) || matchQuery(lo.getName(), query)
                 || matchQuery(lo.getSubject(), query) || matchQuery(lo.getDescription(), query)) {
             return true
@@ -144,7 +151,7 @@ class MongoFSSearchService implements org.commonlibrary.cllo.services.SearchServ
     }
 
     //TODO:Comparar por el price del LO
-    private boolean matchLOMetadataProperties(String query, org.commonlibrary.cllo.model.Metadata metadata) {
+    private boolean matchLOMetadataProperties(String query, Metadata metadata) {
         if (null != metadata) {
             if (matchQuery(metadata.getKeywords(), query) || matchQuery(metadata.getAuthor(), query)
                     || matchQuery(metadata.getCoverage(), query) || matchQuery(metadata.getIsbn(), query)
@@ -177,7 +184,7 @@ class MongoFSSearchService implements org.commonlibrary.cllo.services.SearchServ
 
     }
 
-    private boolean matchEnumMetadata(org.commonlibrary.cllo.model.Metadata metadata, String query) {
+    private boolean matchEnumMetadata(Metadata metadata, String query) {
 
         if ((null != metadata.getDifficulty() && matchQuery(metadata.getDifficulty().name(), query))
                 || (null != metadata.getInteractivityDegree() && matchQuery(metadata.getInteractivityDegree().name(), query))
@@ -203,14 +210,14 @@ class MongoFSSearchService implements org.commonlibrary.cllo.services.SearchServ
         }
     }
 
-    private boolean matchContents(org.commonlibrary.cllo.model.metadatavalues.Format f, org.commonlibrary.cllo.model.Contents contents, String query) {
+    private boolean matchContents(Format f, Contents contents, String query) {
 
         if (null != f && f.name().toLowerCase() != 'url') {
             String[] urlParts = contents.getUrl().split("/")
             if (urlParts.size() < 5) {
                 String id = urlParts[4]
 
-                org.commonlibrary.cllo.dao.impl.MongoContentDAO cd = new org.commonlibrary.cllo.dao.impl.MongoContentDAO(gridOperations)
+                MongoContentDAO cd = new MongoContentDAO(gridOperations)
 
                 InputStream result = cd.getInputStreamByContentReferenceId(id)
                 String decoded = new String(IOUtils.toByteArray(result), "UTF-8");
@@ -231,7 +238,7 @@ class MongoFSSearchService implements org.commonlibrary.cllo.services.SearchServ
     }
 
     @Override
-    List<org.commonlibrary.cllo.model.LearningObject> search(String query, List<String> inclusions, List<String> exclusions, int searchFrom, int searchSize, Locale locale) {
+    List<LearningObject> search(String query, List<String> inclusions, List<String> exclusions, int searchFrom, int searchSize, Locale locale) {
         throw new UnsupportedOperationException('Method not implemented yet')
     }
 
@@ -241,7 +248,7 @@ class MongoFSSearchService implements org.commonlibrary.cllo.services.SearchServ
     }
 
     @Override
-    List<org.commonlibrary.cllo.model.LearningObject> searchMoreLikeThis(String id, int searchFrom, int searchSize, Locale locale) {
+    List<LearningObject> searchMoreLikeThis(String id, int searchFrom, int searchSize, Locale locale) {
         throw new UnsupportedOperationException('Method not implemented yet')
     }
 }
