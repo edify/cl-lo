@@ -19,6 +19,8 @@
 
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
+import org.commonlibrary.cllo.model.metadatavalues.Format
+import org.commonlibrary.cllo.model.metadatavalues.Type
 import org.hibernate.validator.constraints.NotBlank
 import org.springframework.data.mongodb.core.mapping.DBRef
 import org.springframework.data.mongodb.core.mapping.Document
@@ -50,6 +52,11 @@ class LearningObject extends BaseEntity {
     @Column(name = 'name')
     private String name
 
+    //If this property is true, the learning object's content can be accessed without authentication.
+    @Field('is_public')
+    @Column(name = 'is_public')
+    private boolean isPublic = true
+
     //indicates if the contents of the Learning Object is compounded of multiple resources
     @Field('compound_content')
     @Column(name = 'compound_content')
@@ -73,12 +80,12 @@ class LearningObject extends BaseEntity {
     //the type of the Learning Object specified in a enumeration
     @Field('type')
     @Column(name = 'type')
-    private org.commonlibrary.cllo.model.metadatavalues.Type type
+    private Type type
 
     //the format of the Learning Object specified in a enumeration
     @Field('format')
     @Column(name = 'format')
-    private org.commonlibrary.cllo.model.metadatavalues.Format format
+    private Format format
 
     //the metadata of the Learning Object
     @Field('metadata')
@@ -108,8 +115,8 @@ class LearningObject extends BaseEntity {
     private List<LearningObjective> learningObjectiveList = []
 
     void CopyValues(LearningObject lo) {
-
         this.setName(lo.getName())
+        this.setIsPublic(lo.getIsPublic())
         this.setCompoundContent(lo.getCompoundContent())
         this.setSubject(lo.getSubject())
         this.setDescription(lo.getDescription())
@@ -129,6 +136,14 @@ class LearningObject extends BaseEntity {
 
     void setName(String name) {
         this.name = name
+    }
+
+    boolean getIsPublic() {
+        return isPublic
+    }
+
+    void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic
     }
 
     boolean getCompoundContent() {
@@ -163,19 +178,19 @@ class LearningObject extends BaseEntity {
         this.title = title
     }
 
-    org.commonlibrary.cllo.model.metadatavalues.Type getType() {
+    Type getType() {
         return type
     }
 
-    void setType(org.commonlibrary.cllo.model.metadatavalues.Type type) {
+    void setType(Type type) {
         this.type = type
     }
 
-    org.commonlibrary.cllo.model.metadatavalues.Format getFormat() {
+    Format getFormat() {
         return format
     }
 
-    void setFormat(org.commonlibrary.cllo.model.metadatavalues.Format format) {
+    void setFormat(Format format) {
         this.format = format
     }
 

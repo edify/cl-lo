@@ -499,13 +499,13 @@ class LearningObjectController {
         }
 
         if (!apiException.cause.cause) {
-            logger.error(er.code + ': ' + er.message)
+            logger.info(er.code + ': ' + er.message)
         } else {
             String errId = Hashing.sha256().newHasher().putString(UUID.randomUUID().toString(), Charsets.UTF_8).hash().toString()
             String[] args = [ errId ]
             String m = messageSource.getMessage("error.user_message", args, locale);
             er.description = m
-            logger.error(er.code + ': ' + er.message + ' : '+ errId + ' : \nStackTrace:\n'+ apiException.getFormattedStackTrace())
+            logger.info(er.code + ': ' + er.message + ' : '+ errId + ' : \nStackTrace:\n'+ apiException.getFormattedStackTrace())
         }
         return er
     }
