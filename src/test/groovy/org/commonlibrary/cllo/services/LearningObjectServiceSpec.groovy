@@ -256,8 +256,21 @@ class LearningObjectServiceSpec extends Specification {
         thrown(CoreException)
     }
 
+    def "Inserting new learning object with invalid name"() {
+        given:
+        String loJSON = """{"name":"LearningObject/name","description":"description", "title":"title"}"""
+
+        when:
+        learningObjectService.insert(loJSON, locale)
+
+        then:
+        thrown(CoreException)
+    }
+
     def "Updating an existing learning object with a well formed JSON string"() {
         given: "A well formed JSON Learning Object is created"
+        def oldLearningObject = new LearningObject()
+        oldLearningObject.name = "Learning Object Test Name"
         String loName = "Learning Object Test Name"
         String loTitle = "Learning Object Test Title"
         String loDescription = "Learning Object Test Description"
@@ -274,7 +287,7 @@ class LearningObjectServiceSpec extends Specification {
         LearningObject res = learningObjectService.update(loJSON, "testId", locale)
 
         then:
-        2 * learningObjectRepository.findById(_ as String) >> new LearningObject()
+        2 * learningObjectRepository.findById(_ as String) >> oldLearningObject
         // The old content must be kept.
         1 * contentRepository.findById(_)
         // The learning object should be saved and indexed.
@@ -294,6 +307,30 @@ class LearningObjectServiceSpec extends Specification {
         learningObjectService.update(loJSON, "unknownId", locale)
 
         then:
+        thrown(CoreException)
+    }
+
+    def "Updating learning object's name throws an exception"() {
+        given: "A well formed JSON Learning Object is created"
+        def oldLearningObject = new LearningObject()
+        oldLearningObject.name = "Old name"
+        String loName = "Learning Object Test Name"
+        String loTitle = "Learning Object Test Title"
+        String loDescription = "Learning Object Test Description"
+        String loJSON = """
+        {
+            "name": "${loName}",
+            "title": "${loTitle}",
+            "description": "${loDescription}",
+            "contents": {}
+         }
+        """
+
+        when:
+        learningObjectService.update(loJSON, "testId", locale)
+
+        then:
+        1 * learningObjectRepository.findById(_ as String) >> oldLearningObject
         thrown(CoreException)
     }
 
