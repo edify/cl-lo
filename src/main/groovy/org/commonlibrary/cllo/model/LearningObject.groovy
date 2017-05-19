@@ -53,6 +53,7 @@ class LearningObject extends BaseEntity {
     private String name
 
     //If this property is true, the learning object's content can be accessed without authentication.
+    @NotNull
     @Field('is_public')
     @Column(name = 'is_public')
     private boolean isPublic = true

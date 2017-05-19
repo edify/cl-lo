@@ -173,6 +173,13 @@ class LearningObjectServiceImpl implements LearningObjectService {
             ObjectMapper mapper = new ObjectMapper()
             LearningObject loC = mapper.readValue(learningObjectJSON, LearningObject.class)
             lo.CopyValues(loC)
+
+            if (!validFilename(lo.name)) {
+                String[] args = []
+                String m = messageSource.getMessage("lo.m11", args, locale)
+                throw new CoreException(m, null)
+            }
+
             lo.creationDate = new Date()
             lo.modificationDate = new Date()
 
@@ -204,6 +211,13 @@ class LearningObjectServiceImpl implements LearningObjectService {
 
             ObjectMapper mapper = new ObjectMapper()
             LearningObject loC = mapper.readValue(learningObjectJSON, LearningObject.class);
+
+            if (loC.name != lo.name) {
+                String[] args = []
+                String m = messageSource.getMessage("lo.m10", args, locale)
+                throw new CoreException(m, null)
+            }
+
             lo.CopyValues(loC)
 
             if(lo.getContents()){
@@ -959,6 +973,6 @@ class LearningObjectServiceImpl implements LearningObjectService {
         return false
     }
 
-    private boolean validFilename(String filename) { filename.matches("([^\\\\/?%*:|\"<>])+") }
+    private boolean validFilename(String filename) { (filename && filename.matches("([^\\\\/?%*:|\"<>])+")) }
 
 }
