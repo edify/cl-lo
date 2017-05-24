@@ -235,7 +235,7 @@ class LearningObjectServiceImpl implements LearningObjectService {
 
             learningObjectRepository.save(lo)
 
-            syncCurriculaLearningObjects("updated", lo.id, locale)
+            syncCurriculaLearningObjects("updated", lo.id)
 
             lo = learningObjectRepository.findById(id)
 
@@ -276,7 +276,7 @@ class LearningObjectServiceImpl implements LearningObjectService {
             lo = learningObjectRepository.findById(lo.getId())
             learningObjectRepository.delete(lo)
 
-            syncCurriculaLearningObjects("deleted", lo.id, locale)
+            syncCurriculaLearningObjects("deleted", lo.id)
 
             queueIndexService.removeLearningObject(lo.getId(), locale)
 
@@ -308,7 +308,7 @@ class LearningObjectServiceImpl implements LearningObjectService {
             lo = learningObjectRepository.findById(lo.getId())
             learningObjectRepository.delete(lo)
 
-            syncCurriculaLearningObjects("deleted", lo.id, locale)
+            syncCurriculaLearningObjects("deleted", lo.id)
 
             queueIndexService.removeLearningObject(lo.getId(), locale)
 
@@ -987,7 +987,7 @@ class LearningObjectServiceImpl implements LearningObjectService {
 
     private boolean validFilename(String filename) { (filename && filename.matches("([^\\\\/?%*:|\"<>])+")) }
 
-    private def syncCurriculaLearningObjects(action, loId, locale) {
+    private def syncCurriculaLearningObjects(action, loId) {
         try {
             def syncResponse
             if (action == "updated") {
