@@ -17,6 +17,7 @@
 
  package org.commonlibrary.cllo.services.impl
 
+import ch.qos.logback.classic.Logger
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.tika.io.IOUtils
 import org.commonlibrary.cllo.dao.ContentDAO
@@ -31,6 +32,8 @@ import org.commonlibrary.cllo.services.QueueIndexService
 import org.commonlibrary.cllo.util.CoreException
 import org.commonlibrary.cllo.util.FileResponse
 import org.commonlibrary.cllo.util.VersionResponse
+import org.commonlibrary.clsdk.curricula.Curricula
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.MessageSource
 import org.springframework.data.domain.Page
@@ -71,6 +74,9 @@ class LearningObjectServiceImpl implements LearningObjectService {
 
     @Autowired
     private MessageSource messageSource
+
+    @Autowired
+    private Curricula curricula
 
     public  LearningObject findById(String id, Locale locale) throws CoreException{
         try {
@@ -229,6 +235,8 @@ class LearningObjectServiceImpl implements LearningObjectService {
 
             learningObjectRepository.save(lo)
 
+            syncCurriculaLearningObjects("updated", lo.id, locale)
+
             lo = learningObjectRepository.findById(id)
 
             def externalUrlChanged = oldExternalUrl != lo.externalUrl
@@ -268,6 +276,8 @@ class LearningObjectServiceImpl implements LearningObjectService {
             lo = learningObjectRepository.findById(lo.getId())
             learningObjectRepository.delete(lo)
 
+            syncCurriculaLearningObjects("deleted", lo.id, locale)
+
             queueIndexService.removeLearningObject(lo.getId(), locale)
 
             return lo
@@ -297,6 +307,8 @@ class LearningObjectServiceImpl implements LearningObjectService {
 
             lo = learningObjectRepository.findById(lo.getId())
             learningObjectRepository.delete(lo)
+
+            syncCurriculaLearningObjects("deleted", lo.id, locale)
 
             queueIndexService.removeLearningObject(lo.getId(), locale)
 
@@ -974,5 +986,24 @@ class LearningObjectServiceImpl implements LearningObjectService {
     }
 
     private boolean validFilename(String filename) { (filename && filename.matches("([^\\\\/?%*:|\"<>])+")) }
+
+    private def syncCurriculaLearningObjects(action, loId, locale) {
+        try {
+            def syncResponse
+            if (action == "updated") {
+                syncResponse = curricula.syncUpdatedLearningObjects(loId)
+            } else {
+                syncResponse = curricula.syncDeletedLearningObjects(loId)
+            }
+            if (syncResponse.statusCode != 200) {
+                throw new Exception()
+            }
+        } catch(Exception e) {
+            Logger logger = LoggerFactory.getLogger("org.commonlibrary.cllo.controllers.LearningObjectService")
+            def errorMessage = e.getMessage() ?: ""
+            logger.info("""The learningObjec with id: ${loId} was ${action} but could not be synchronized in cl-curricula. ${errorMessage}""")
+        }
+
+    }
 
 }
