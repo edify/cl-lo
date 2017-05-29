@@ -985,7 +985,7 @@ class LearningObjectServiceImpl implements LearningObjectService {
         return false
     }
 
-    private boolean validFilename(String filename) { (filename && filename.matches("([^\\\\/?%*:|\"<>])+")) }
+    private boolean validFilename(String filename) { (filename && filename.matches("([^\\\\/?%+*:|\"<>])+")) }
 
     private def syncCurriculaLearningObjects(action, loId) {
         try {
