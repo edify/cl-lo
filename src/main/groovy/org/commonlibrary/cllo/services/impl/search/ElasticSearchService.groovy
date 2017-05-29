@@ -17,6 +17,10 @@
 
  package org.commonlibrary.cllo.services.impl.search
 
+import org.commonlibrary.cllo.model.LearningObject
+import org.commonlibrary.cllo.repositories.LearningObjectRepository
+import org.commonlibrary.cllo.services.SearchService
+import org.commonlibrary.cllo.util.CoreException
 import org.elasticsearch.action.search.SearchResponse
 import org.elasticsearch.client.transport.TransportClient
 import org.springframework.beans.factory.annotation.Autowired
@@ -31,7 +35,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Profile('SRCH_ES')
-class ElasticSearchService implements org.commonlibrary.cllo.services.SearchService {
+class ElasticSearchService implements SearchService {
 
     @Value('${elastic_search.general.lo_index}')
     String loIndexName
@@ -52,14 +56,14 @@ class ElasticSearchService implements org.commonlibrary.cllo.services.SearchServ
     TransportClient elasticSearchClient
 
     @Autowired
-    private org.commonlibrary.cllo.repositories.LearningObjectRepository learningObjectRepository
+    private LearningObjectRepository learningObjectRepository
 
     @Autowired
     private MessageSource messageSource
 
 
     @Override
-    List<org.commonlibrary.cllo.model.LearningObject> search(String query, List<String> inclusions, List<String> exclusions, int searchFrom, int searchSize, Locale locale) {
+    List<LearningObject> search(String query, List<String> inclusions, List<String> exclusions, int searchFrom, int searchSize, Locale locale) {
         try {
             def exclusionsQuery = exclusions.join(' ')
             def inclusionsQuery = inclusions.join(' ')
@@ -119,7 +123,7 @@ class ElasticSearchService implements org.commonlibrary.cllo.services.SearchServ
         } catch(Exception e) {
             String[] args = []
             String m = e.getMessage() ?: messageSource.getMessage("search.m1", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
@@ -166,12 +170,12 @@ class ElasticSearchService implements org.commonlibrary.cllo.services.SearchServ
         } catch(Exception e) {
             String[] args = []
             String m = messageSource.getMessage("search.m1", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
     @Override
-    List<org.commonlibrary.cllo.model.LearningObject> searchMoreLikeThis(String id, int searchFrom, int searchSize, Locale locale) {
+    List<LearningObject> searchMoreLikeThis(String id, int searchFrom, int searchSize, Locale locale) {
         try {
             def jsonQuery = """
                 {
@@ -210,7 +214,7 @@ class ElasticSearchService implements org.commonlibrary.cllo.services.SearchServ
         } catch(Exception e) {
             String[] args = []
             String m = messageSource.getMessage("search.m1", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
@@ -231,7 +235,7 @@ class ElasticSearchService implements org.commonlibrary.cllo.services.SearchServ
         } catch (Exception e) {
             String[] args = []
             String m = messageSource.getMessage("search.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 

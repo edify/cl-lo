@@ -28,4 +28,11 @@ public class ApiException extends Exception {
     public ApiException(String message, Exception cause) {
         super(message,cause)
     }
+
+    public String getFormattedStackTrace() {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        printStackTrace(pw);
+        return sw.toString();
+    }
 }

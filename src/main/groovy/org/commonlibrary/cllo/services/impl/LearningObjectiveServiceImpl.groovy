@@ -18,6 +18,10 @@
  package org.commonlibrary.cllo.services.impl
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import org.commonlibrary.cllo.model.LearningObjective
+import org.commonlibrary.cllo.repositories.LearningObjectiveRepository
+import org.commonlibrary.cllo.services.LearningObjectiveService
+import org.commonlibrary.cllo.util.CoreException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.MessageSource
 import org.springframework.data.domain.Page
@@ -35,32 +39,32 @@ import org.springframework.transaction.annotation.Transactional
  */
 @Service
 @Transactional
-class LearningObjectiveServiceImpl implements org.commonlibrary.cllo.services.LearningObjectiveService{
+class LearningObjectiveServiceImpl implements LearningObjectiveService{
 
     @Autowired
-    private org.commonlibrary.cllo.repositories.LearningObjectiveRepository learningObjectiveRepository
+    private LearningObjectiveRepository learningObjectiveRepository
 
     @Autowired
     private MessageSource messageSource
 
-    public  org.commonlibrary.cllo.model.LearningObjective findById(String id, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public  LearningObjective findById(String id, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.LearningObjective lo = learningObjectiveRepository.findById(id)
+            LearningObjective lo = learningObjectiveRepository.findById(id)
             if(!lo){
                 String[] args = [ id ]
                 String m = messageSource.getMessage("loi.m1", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
             return lo
         }
         catch (Exception e) {
             String[] args = [  ]
             String m = e.getMessage() ?: messageSource.getMessage("loi.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
-    public Page<org.commonlibrary.cllo.model.LearningObjective> findAll(int from, int size, boolean all, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public Page<LearningObjective> findAll(int from, int size, boolean all, Locale locale) throws CoreException{
         try {
             int page = from/size
             if(page < 0){
@@ -70,38 +74,38 @@ class LearningObjectiveServiceImpl implements org.commonlibrary.cllo.services.Le
 
             if (all) {
                 amount = learningObjectiveRepository.count()
-                Page<org.commonlibrary.cllo.model.LearningObjective> los = learningObjectiveRepository.findAll(new PageRequest(page, amount, new Sort(Sort.Direction.ASC, "name")))
+                Page<LearningObjective> los = learningObjectiveRepository.findAll(new PageRequest(page, amount, new Sort(Sort.Direction.ASC, "name")))
                 return los
             } else {
 
                 if(amount <= 0 || page > Math.ceil((double)(learningObjectiveRepository.count()/amount))){
                     String[] args = [ ]
                     String m = messageSource.getMessage("loi.m3", args, locale)
-                    throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                    throw new CoreException(m, null)
                 }
 
-                Page<org.commonlibrary.cllo.model.LearningObjective> los = learningObjectiveRepository.findAll(new PageRequest(page, amount, new Sort(Sort.Direction.DESC, "modificationDate")))
+                Page<LearningObjective> los = learningObjectiveRepository.findAll(new PageRequest(page, amount, new Sort(Sort.Direction.DESC, "modificationDate")))
                 return los
             }
         }
         catch (Exception e) {
             String[] args = [  ]
             String m = e.getMessage() ?: messageSource.getMessage("loi.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
 
-    public org.commonlibrary.cllo.model.LearningObjective insert(String learningObjectiveJSON, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public LearningObjective insert(String learningObjectiveJSON, Locale locale) throws CoreException{
         try {
-            org.commonlibrary.cllo.model.LearningObjective lo = new org.commonlibrary.cllo.model.LearningObjective()
+            LearningObjective lo = new LearningObjective()
             ObjectMapper mapper = new ObjectMapper()
-            org.commonlibrary.cllo.model.LearningObjective loC = mapper.readValue(learningObjectiveJSON, org.commonlibrary.cllo.model.LearningObjective.class)
+            LearningObjective loC = mapper.readValue(learningObjectiveJSON, LearningObjective.class)
             List<String> loPath = []
             if(checkCycles(loC,loPath)){
                 String[] args = []
                 String m = messageSource.getMessage("loi.m4", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
             lo.CopyValues(loC)
             lo.creationDate = new Date()
@@ -114,30 +118,30 @@ class LearningObjectiveServiceImpl implements org.commonlibrary.cllo.services.Le
         catch (Exception e) {
             String[] args = [  ]
             String m = e.getMessage() ?: messageSource.getMessage("loi.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
 
-    public org.commonlibrary.cllo.model.LearningObjective update(String learningObjectiveJSON, String id, Locale locale) throws org.commonlibrary.cllo.util.CoreException {
+    public LearningObjective update(String learningObjectiveJSON, String id, Locale locale) throws CoreException {
         try {
-            org.commonlibrary.cllo.model.LearningObjective lo = learningObjectiveRepository.findById(id)
+            LearningObjective lo = learningObjectiveRepository.findById(id)
 
             if(!lo){
                 String[] args = [ id ]
                 String m = messageSource.getMessage("loi.m1", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             ObjectMapper mapper = new ObjectMapper()
-            org.commonlibrary.cllo.model.LearningObjective loC = mapper.readValue(learningObjectiveJSON, org.commonlibrary.cllo.model.LearningObjective.class);
+            LearningObjective loC = mapper.readValue(learningObjectiveJSON, LearningObjective.class);
 
 
             List<String> loPath = []
             if(checkCycles(loC,loPath)){
                 String[] args = []
                 String m = messageSource.getMessage("loi.m4", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             lo.CopyValues(loC)
@@ -151,20 +155,20 @@ class LearningObjectiveServiceImpl implements org.commonlibrary.cllo.services.Le
         catch (Exception e) {
             String[] args = [  ]
             String m = e.getMessage() ?: messageSource.getMessage("loi.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
 
-    public org.commonlibrary.cllo.model.LearningObjective delete(String id, Locale locale) throws org.commonlibrary.cllo.util.CoreException{
+    public LearningObjective delete(String id, Locale locale) throws CoreException{
 
         try {
-            org.commonlibrary.cllo.model.LearningObjective lo = learningObjectiveRepository.findById(id)
+            LearningObjective lo = learningObjectiveRepository.findById(id)
 
             if(!lo){
                 String[] args = [ id ]
                 String m = messageSource.getMessage("loi.m1", args, locale)
-                throw new org.commonlibrary.cllo.util.CoreException(m, null)
+                throw new CoreException(m, null)
             }
 
             learningObjectiveRepository.delete(lo)
@@ -174,12 +178,12 @@ class LearningObjectiveServiceImpl implements org.commonlibrary.cllo.services.Le
         catch (Exception e) {
             String[] args = [  ]
             String m = e.getMessage() ?: messageSource.getMessage("loi.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
 
-    private boolean checkCycles(org.commonlibrary.cllo.model.LearningObjective lo, List<String> loPath){
+    private boolean checkCycles(LearningObjective lo, List<String> loPath){
         loPath.add(lo.getId())
         boolean res = false
         for(loChild in lo.getLearningObjectiveList()){

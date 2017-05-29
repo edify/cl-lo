@@ -144,6 +144,7 @@ dependencies {
 
     // CL project dependencies.
     compile "org.commonlibrary:cl-auth-java:0.0.1"
+    compile "org.commonlibrary:cl-sdk-curricula:0.0.1"
 
     // Runtime dependencies.
     runtime "com.mattbertolini:liquibase-slf4j:1.2.1"

@@ -16,6 +16,9 @@
 
 
  package org.commonlibrary.cllo.services
+
+import org.commonlibrary.cllo.model.LearningObject
+
 /**
  * Created with IntelliJ IDEA.
  * User: amasis
@@ -26,10 +29,10 @@
 
 interface SearchService {
 
-    List<org.commonlibrary.cllo.model.LearningObject> search(String query, List<String> inclusions, List<String> exclusions, int searchFrom, int searchSize, Locale locale)
+    List<LearningObject> search(String query, List<String> inclusions, List<String> exclusions, int searchFrom, int searchSize, Locale locale)
 
     List<String> suggestAltTerms(String query, Locale locale)
 
-    List<org.commonlibrary.cllo.model.LearningObject> searchMoreLikeThis(String id, int searchFrom, int searchSize, Locale locale)
+    List<LearningObject> searchMoreLikeThis(String id, int searchFrom, int searchSize, Locale locale)
 
 }

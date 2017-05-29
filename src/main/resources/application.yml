@@ -71,6 +71,13 @@ rabbitmq:
     url: ${CL_RMQ_URL}
     lo_queue: cl_lo_queue
 
+curricula:
+  general:
+    base_url: ${CL_CURRICULA_BASE_URL}
+    api_url: ${CL_CURRICULA_API_URL}
+    api_key_id: ${CL_CURRICULA_API_ID}
+    api_secret_key: ${CL_CURRICULA_API_SECRET}
+
 ---
 spring:
   profiles: Integration_Tests

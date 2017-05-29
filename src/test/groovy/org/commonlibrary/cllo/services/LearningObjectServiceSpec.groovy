@@ -32,6 +32,7 @@ import org.commonlibrary.cllo.repositories.impl.mongo.LearningObjectiveMongoRepo
 import org.commonlibrary.cllo.services.impl.LearningObjectServiceImpl
 import org.commonlibrary.cllo.util.CoreException
 import org.commonlibrary.cllo.util.VersionResponse
+import org.commonlibrary.clsdk.curricula.Curricula
 import org.springframework.context.MessageSource
 import org.springframework.http.HttpEntity
 import org.springframework.test.util.ReflectionTestUtils
@@ -65,6 +66,9 @@ class LearningObjectServiceSpec extends Specification {
     @Shared
     QueueIndexService queueIndexService
 
+    @Shared
+    private Curricula curricula
+
     def setup() {
         // Service autowired fields will be mocks. Mocks' default behavior is to return null.
         MessageSource ms = Mock()
@@ -82,8 +86,11 @@ class LearningObjectServiceSpec extends Specification {
         contentDAO = Mock(S3ContentDAO)
         ReflectionTestUtils.setField(learningObjectService, "contentDAO", contentDAO)
 
-        queueIndexService = Mock(org.commonlibrary.cllo.services.QueueIndexService)
+        queueIndexService = Mock(QueueIndexService)
         ReflectionTestUtils.setField(learningObjectService, "queueIndexService", queueIndexService)
+
+        curricula = Mock(Curricula)
+        ReflectionTestUtils.setField(learningObjectService, "curricula", curricula)
     }
 
     def "Finding existing learning object by its id"() {
@@ -256,8 +263,21 @@ class LearningObjectServiceSpec extends Specification {
         thrown(CoreException)
     }
 
+    def "Inserting new learning object with invalid name"() {
+        given:
+        String loJSON = """{"name":"LearningObject/name","description":"description", "title":"title"}"""
+
+        when:
+        learningObjectService.insert(loJSON, locale)
+
+        then:
+        thrown(CoreException)
+    }
+
     def "Updating an existing learning object with a well formed JSON string"() {
         given: "A well formed JSON Learning Object is created"
+        def oldLearningObject = new LearningObject()
+        oldLearningObject.name = "Learning Object Test Name"
         String loName = "Learning Object Test Name"
         String loTitle = "Learning Object Test Title"
         String loDescription = "Learning Object Test Description"
@@ -274,11 +294,14 @@ class LearningObjectServiceSpec extends Specification {
         LearningObject res = learningObjectService.update(loJSON, "testId", locale)
 
         then:
-        2 * learningObjectRepository.findById(_ as String) >> new LearningObject()
+        2 * learningObjectRepository.findById(_ as String) >> oldLearningObject
         // The old content must be kept.
         1 * contentRepository.findById(_)
         // The learning object should be saved and indexed.
         1 * learningObjectRepository.save(_ as LearningObject)
+        // Sync cl-curricula
+        1 * curricula.syncUpdatedLearningObjects(_) >> [statusCode: 200]
+        // Update object in the index.
         1 * queueIndexService.updateLearningObject(_ as LearningObject, false, _ as Locale)
 
         res.getName() == loName
@@ -297,6 +320,30 @@ class LearningObjectServiceSpec extends Specification {
         thrown(CoreException)
     }
 
+    def "Updating learning object's name throws an exception"() {
+        given: "A well formed JSON Learning Object is created"
+        def oldLearningObject = new LearningObject()
+        oldLearningObject.name = "Old name"
+        String loName = "Learning Object Test Name"
+        String loTitle = "Learning Object Test Title"
+        String loDescription = "Learning Object Test Description"
+        String loJSON = """
+        {
+            "name": "${loName}",
+            "title": "${loTitle}",
+            "description": "${loDescription}",
+            "contents": {}
+         }
+        """
+
+        when:
+        learningObjectService.update(loJSON, "testId", locale)
+
+        then:
+        1 * learningObjectRepository.findById(_ as String) >> oldLearningObject
+        thrown(CoreException)
+    }
+
     def "Deleting existing learning object with no content"() {
         setup:
         LearningObject learningObject = new LearningObject()
@@ -309,6 +356,9 @@ class LearningObjectServiceSpec extends Specification {
         2 * learningObjectRepository.findById(_) >> learningObject
         // Learning object is deleted from repository and from index.
         1 * learningObjectRepository.delete(_ as LearningObject)
+        // Sync cl-curricula.
+        1 * curricula.syncDeletedLearningObjects(_) >> [statusCode: 200]
+        //Remove object from index.
         1 * queueIndexService.removeLearningObject(_ as String, _ as Locale)
         res == learningObject
     }
@@ -331,6 +381,8 @@ class LearningObjectServiceSpec extends Specification {
         // Delete object's content and the object itself from repositories.
         1 * contentRepository.delete(_ as Contents)
         1 * learningObjectRepository.delete(_ as LearningObject)
+        // Sync cl-curricula.
+        1 * curricula.syncDeletedLearningObjects(_) >> [statusCode: 200]
         //Remove object from index.
         1 * queueIndexService.removeLearningObject(_ as String, _ as Locale)
 
@@ -349,7 +401,9 @@ class LearningObjectServiceSpec extends Specification {
         // Delete object's content and the object itself from repositories.
         1 * contentRepository.delete(_ as Contents)
         1 * learningObjectRepository.delete(_ as LearningObject)
-        //Remove object from index.
+        // Sync cl-curricula.
+        1 * curricula.syncDeletedLearningObjects(_) >> [statusCode: 200]
+        // Remove object from index.
         1 * queueIndexService.removeLearningObject(_ as String, _ as Locale)
 
         res2 == learningObject
@@ -383,6 +437,9 @@ class LearningObjectServiceSpec extends Specification {
         2 * learningObjectRepository.findById(_) >> learningObject
         // The learning object is removed from repository and index .
         1 * learningObjectRepository.delete(_ as LearningObject)
+        // Sync cl-curricula.
+        1 * curricula.syncDeletedLearningObjects(_) >> [statusCode: 200]
+        // Remove from index.
         1 * queueIndexService.removeLearningObject(_ as String, _ as Locale)
 
         res1 == learningObject
@@ -397,6 +454,9 @@ class LearningObjectServiceSpec extends Specification {
         1 * contentRepository.delete(_ as Contents)
         // The learning object is removed from repository and index .
         1 * learningObjectRepository.delete(_ as LearningObject)
+        // Sync cl-curricula.
+        1 * curricula.syncDeletedLearningObjects(_) >> [statusCode: 200]
+        // Remove from index.
         1 * queueIndexService.removeLearningObject(_ as String, _ as Locale)
 
         res2 == learningObject

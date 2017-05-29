@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import groovy.util.logging.Log
 import org.commonlibrary.cllo.auth.service.AuthService
+import org.commonlibrary.cllo.repositories.LearningObjectRepository
+import org.commonlibrary.cllo.services.LearningObjectService
 import org.commonlibrary.cllo.support.MultiReadHttpServletRequest
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
@@ -50,6 +52,9 @@ class AuthFilter implements Filter {
     @Autowired
     AuthService authService
 
+    @Autowired
+    LearningObjectRepository learningObjectRepository
+
     ObjectMapper mapper
 
     AuthFilter() {
@@ -76,6 +81,13 @@ class AuthFilter implements Filter {
 
         method = req.getMethod().toLowerCase()
 
+        def allowsPublic = false
+
+        // Check if the user requested a learning object's public file.
+        if (method == "get") {
+            allowsPublic = hasPublicAccess(req.getRequestURI())
+        }
+
         requestURL = getFullURL(req.getRequestURL().toString(), req.getQueryString())
 
         if(!req.contentType?.startsWith('multipart') && (method == 'post' || method == 'put')) {
@@ -86,7 +98,7 @@ class AuthFilter implements Filter {
             body = ''
         }
 
-        if(authService.authenticate(headers, method, requestURL, body)){
+        if(allowsPublic || authService.authenticate(headers, method, requestURL, body)){
             chain.doFilter(req,res)
         } else{
             res.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
@@ -98,6 +110,21 @@ class AuthFilter implements Filter {
 
     @Override
     void destroy() {}
+
+    private boolean hasPublicAccess(String requestURI) {
+        try {
+            def fileURI = "(.)*/learningObjects/([^/])+/contents/([^/])+/file/([^/])+(/(inputStream|base64|(versions/([^/])+)))?"
+            if (requestURI.matches(fileURI)) {
+                def learningObjectId = requestURI.split("/learningObjects/")[1].split("/")[0]
+                def lo = learningObjectRepository.findById(learningObjectId)
+                return !lo ? true : lo.isPublic
+            } else {
+                return false
+            }
+        } catch (Exception e) {
+            return false
+        }
+    }
 
     private def getFullURL(requestURL, queryString) { (!queryString) ? requestURL : "${requestURL}?${queryString}" }
 

@@ -22,6 +22,10 @@ import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
 import com.rabbitmq.client.MessageProperties
+import org.commonlibrary.cllo.dao.ContentDAO
+import org.commonlibrary.cllo.model.LearningObject
+import org.commonlibrary.cllo.services.QueueIndexService
+import org.commonlibrary.cllo.util.CoreException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.MessageSource
@@ -34,7 +38,7 @@ import org.springframework.stereotype.Service
 
 @Service
 @Profile('INDEX_RMQ')
-class RabbitMQService implements org.commonlibrary.cllo.services.QueueIndexService {
+class RabbitMQService implements QueueIndexService {
 
     @Value('${rabbitmq.general.lo_queue}')
     String queueName
@@ -43,13 +47,13 @@ class RabbitMQService implements org.commonlibrary.cllo.services.QueueIndexServi
     ConnectionFactory connectionFactory
 
     @Autowired
-    org.commonlibrary.cllo.dao.ContentDAO contentDAO
+    ContentDAO contentDAO
 
     @Autowired
     private MessageSource messageSource
 
     @Override
-    def addLearningObject(org.commonlibrary.cllo.model.LearningObject lo, Locale locale) {
+    def addLearningObject(LearningObject lo, Locale locale) {
         try {
             ObjectMapper mapper = new ObjectMapper()
             def msgJSON = mapper.writeValueAsString(['action': 'add', 'content': lo])
@@ -57,7 +61,7 @@ class RabbitMQService implements org.commonlibrary.cllo.services.QueueIndexServi
         } catch(Exception e) {
             String[] args = ['LearningObject', lo.getId(), e.getMessage()]
             String m = messageSource.getMessage("index.m1", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
@@ -70,12 +74,12 @@ class RabbitMQService implements org.commonlibrary.cllo.services.QueueIndexServi
         } catch(Exception e) {
             String[] args = ['LearningObject', loId, e.getMessage()]
             String m = messageSource.getMessage("index.m2", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
     @Override
-    def updateLearningObject(org.commonlibrary.cllo.model.LearningObject lo, Boolean updateFile, Locale locale) {
+    def updateLearningObject(LearningObject lo, Boolean updateFile, Locale locale) {
         try {
             def fileUrl = null
             if (updateFile) {
@@ -102,7 +106,7 @@ class RabbitMQService implements org.commonlibrary.cllo.services.QueueIndexServi
         } catch(Exception e) {
             String[] args = ['LearningObject', lo.getId(), e.getMessage()]
             String m = messageSource.getMessage("index.m3", args, locale)
-            throw new org.commonlibrary.cllo.util.CoreException(m, e)
+            throw new CoreException(m, e)
         }
     }
 
