@@ -6,13 +6,11 @@ Common Library Learning Object
 
 1. Everything you need to compile this project is written in the build.gradle. Compile the project using gradle wrapper:
 
-        $ ./gradlew build
+        $ ./gradlew build -Partifactory_user=$ARTIFACTORY_USERNAME -Partifactory_password=$ARTIFACTORY_PASSWORD
 
 ## Run
 
-1. You need to run the docker compose file first.
-
-  -  In the project root you will find a docker-compose.yml file with the required images. It's currently downloading the latest versions:
+1.  Make sure the other CommonLibrary dependencies are up and running.
 
     | **Image**                 | **Used by**                  |
     | -------                   | -------                      |
@@ -23,25 +21,35 @@ Common Library Learning Object
     | RabbitMQ: 3.6.5           | cl-lo, cl-index.             |
 	
 
-  -  To start up the databases using docker:
-
-```bash
-$ export ORIENTDB_ROOT_PASSWORD=root
-$ docker-compose up -d
-```
-        
-
 2. Then you need to add the following environment variables to your system:
 
-  -  AWS_ACCESS_KEY
-  -  AWS_SECRET_KEY
-  -  AWS_S3_BUCKET_NAME
-  -  CERT_KEY_STORE_PATH
-  -  CERT_KEY_STORE_PW
-  -  CERT_KEY_PW
-  -  CL_AUTH_PASSPHRASE
-  -  CL_REDIS_HOST
-  -  CL_REDIS_PORT
+  
+    ```bash
+    export AWS_ACCESS_KEY=AKIAJDPND6ICEUQZBFLA
+    export AWS_SECRET_KEY=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
+    export AWS_S3_BUCKET_NAME=cl-develop
+    export CERT_KEY_STORE_PATH=./ssl-key
+    export CERT_KEY_STORE_PW=changeit
+    export CERT_KEY_PW=changeit
+    export CL_REDIS_HOST=localhost
+    export CL_REDIS_PORT=6379
+    export CL_REDIS_PW=root
+    export CL_AUTH_PASSPHRASE=passphrase
+    export CL_LO_HTTPS_PORT=8043
+    export CL_LO_HTTP_PORT=8080
+    export CL_MONGO_URI=mongodb://localhost/cl_dev
+    export CL_IT_MONGO_URI=mongodb://localhost/cl_integration_tests
+    export CL_ES_URL=localhost:9200
+    export CL_ES_HOST=localhost         # This host and the following port are for "binary" communication.
+    export CL_ES_PORT=9300
+    export CL_RMQ_URL=amqp://localhost
+    export CL_CURRICULA_BASE_URL=http://localhost:8081
+    export CL_CURRICULA_API_URL=/api/v1
+    export CL_CURRICULA_API_ID=
+    export CL_CURRICULA_API_SECRET=
+    ```
+  
+  
 
 Notes:
   - The CL_AUTH_PASSPHRASE must be the same that you set in the cl-auth bootstrap. Required for secretKey decryption.
