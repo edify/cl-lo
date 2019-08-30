@@ -25,8 +25,8 @@ Common Library Learning Object
 
   
     ```bash
-    export AWS_ACCESS_KEY=AKIAJDPND6ICEUQZBFLA
-    export AWS_SECRET_KEY=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
+    export AWS_ACCESS_KEY=
+    export AWS_SECRET_KEY=
     export AWS_S3_BUCKET_NAME=cl-develop
     export CERT_KEY_STORE_PATH=./ssl-key
     export CERT_KEY_STORE_PW=changeit
